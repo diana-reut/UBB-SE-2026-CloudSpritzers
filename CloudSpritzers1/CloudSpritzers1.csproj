@@ -15,6 +15,9 @@
   <ItemGroup>
     <None Remove=".env" />
   </ItemGroup>
+  <ItemGroup>
+    <Page Remove="src\model\message\MessageView.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include=".env">
@@ -49,6 +52,11 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="src\view\message\MessageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
   </ItemGroup>
 
   <!--
