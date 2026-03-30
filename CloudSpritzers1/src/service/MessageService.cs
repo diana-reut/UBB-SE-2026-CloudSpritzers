@@ -1,6 +1,7 @@
 using CloudSpritzers1.src.model.chat;
 using CloudSpritzers1.src.model.message;
 using CloudSpritzers1.src.repository;
+using CloudSpritzers1.src.service.bot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +10,20 @@ namespace CloudSpritzers1.src.service
 {
     internal class MessageService
     {
-        private readonly ChatDBRepository    _chatRepository;
+        private readonly ChatDBRepository _chatRepository;
         private readonly MessageDBRepository _messageRepository;
+        private readonly BotEngine _botEngine;
 
-        public MessageService(ChatDBRepository chatRepository, MessageDBRepository messageRepository)
+        public MessageService(
+            ChatDBRepository chatRepository,
+            MessageDBRepository messageRepository,
+            BotEngine botEngine)
         {
-            _chatRepository    = chatRepository    ?? throw new ArgumentNullException(nameof(chatRepository));
+            _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
             _messageRepository = messageRepository ?? throw new ArgumentNullException(nameof(messageRepository));
+            _botEngine = botEngine ?? throw new ArgumentNullException(nameof(botEngine));
         }
 
-        // Sender is an ISender, so we extract the name and look up the chat from the DB
         public void SendMessage(int chatId, ISender sender, string text)
         {
             if (string.IsNullOrWhiteSpace(text))
@@ -26,41 +31,40 @@ namespace CloudSpritzers1.src.service
 
             Chat chat = GetActiveChat(chatId);
 
-            // Persist to DB — sender_id resolved via the chat's user
-            _messageRepository.Add(chatId, chat.UserId, text);
-
             var message = new Message(sender, chat, text, isRead: false);
+            _messageRepository.Add(message);
             chat.AddMessage(message);
+
+            if (sender is not BotEngine)
+                HandleIncomingMessage(chatId, message);
         }
 
-        // Overload for bot / system IMessage responses
-        public void SendMessage(int chatId, IMessage message)
+        public void SendMessage(int chatId, IMessage botResponse)
         {
-            ArgumentNullException.ThrowIfNull(message);
+            ArgumentNullException.ThrowIfNull(botResponse);
 
             Chat chat = GetActiveChat(chatId);
 
-            // Bot messages stored with sender_id = 0 (system convention)
-            _messageRepository.Add(chatId, senderId: 0, message.GetMessage());
+            var stored = new Message(
+                _botEngine,
+                chat,
+                botResponse.GetMessage(),
+                isRead: false
+            );
+            _messageRepository.Add(stored);
 
-            chat.AddMessage(message);
+            chat.AddMessage(botResponse);
         }
 
-        public IEnumerable<IMessage> HandleIncomingMessage(int chatId, IMessage incomingMessage)
+        private void HandleIncomingMessage(int chatId, IMessage incomingMessage)
         {
-            ArgumentNullException.ThrowIfNull(incomingMessage);
-
-            Chat chat = GetActiveChat(chatId);
-
             int messageId = incomingMessage.GetId();
             if (messageId > 0)
                 _messageRepository.MarkAsRead(messageId);
 
-            chat.AddMessage(incomingMessage);
+            BotMessage botReply = _botEngine.Respond(incomingMessage);
 
-            return incomingMessage.GetNextOptions()
-                .Select(opt => (IMessage)incomingMessage)   // return next bot prompts to caller
-                .ToList();
+            SendMessage(chatId, botReply);
         }
 
         public IMessage GetMessage(int chatId, int messageId)
@@ -81,7 +85,6 @@ namespace CloudSpritzers1.src.service
             return _messageRepository.GetMessagesSince(chatId, firstMessageId);
         }
 
-        // Loads the chat from the DB and guards against writing to a closed session
         private Chat GetActiveChat(int chatId)
         {
             Chat chat = _chatRepository.GetById(chatId);

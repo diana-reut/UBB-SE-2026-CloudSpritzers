@@ -32,7 +32,8 @@ namespace CloudSpritzers1.src.model.message
             this._isRead = true;
         }
 
-        bool IsMessageRead()
+        // TODO: is this okay to be changed to public?
+        public bool IsMessageRead()
         {
             return _isRead;
         }

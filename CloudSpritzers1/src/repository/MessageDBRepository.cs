@@ -9,10 +9,12 @@ namespace CloudSpritzers1.src.repository
     {
         protected override Message MapRowToEntity(SqlDataReader reader)
         {
+            int id = reader.GetInt32(reader.GetOrdinal("message_id"));
             int senderId = reader.GetInt32(reader.GetOrdinal("sender_id"));
             string text = reader.GetString(reader.GetOrdinal("text"));
             bool isRead = reader.GetBoolean(reader.GetOrdinal("is_read"));
 
+            // FIXME: resolve to real Chat, Sender object once implemented, then delete UserStub
             return new Message(new UserStub(senderId), null, text, isRead);
         }
 
@@ -36,6 +38,16 @@ namespace CloudSpritzers1.src.repository
             return Add(cmd, elem);
         }
 
+        // TODO: is this needed? Are we still doing the read/unread message tracking?
+        public void MarkAsRead(int id)
+        {
+            string query = "UPDATE Message SET is_read = 1 WHERE message_id = @id";
+            var cmd = new SqlCommand(query);
+            cmd.Parameters.AddWithValue("@id", id);
+
+            UpdateById(id, cmd, GetById(id));
+        }
+
         public void DeleteById(int id)
         {
             string query = "DELETE FROM Message WHERE message_id = @id";
@@ -50,7 +62,7 @@ namespace CloudSpritzers1.src.repository
             string query = "UPDATE Message SET text = @text, is_read = @isRead WHERE message_id = @id";
             var cmd = new SqlCommand(query);
             cmd.Parameters.AddWithValue("@text", message.GetMessage());
-            cmd.Parameters.AddWithValue("@isRead", false);
+            cmd.Parameters.AddWithValue("@isRead", message.IsMessageRead());
             cmd.Parameters.AddWithValue("@id", id);
 
             UpdateById(id, cmd, message);
