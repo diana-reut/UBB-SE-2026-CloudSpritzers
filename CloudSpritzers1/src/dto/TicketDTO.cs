@@ -10,11 +10,14 @@ namespace CloudSpritzers1.src.dto
 {
     public record TicketDTO(
         int TicketId, 
-        int UserId, 
+        int UserId,
+        string UserEmail,
         UrgencyLevelEnum UrgencyLevel, 
         StatusEnum Status,
         int CategoryId,
-        int SubcaregoryId,
+        string CategoryName,
+        int SubcategoryId,
+        string SubcategoryName,
         string Subject,
         string Description,
         DateTime CreatedAt)

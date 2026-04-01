@@ -1,12 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Page
-    x:Class="CloudSpritzers1.src.view.TicketsView"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:Microsoft.UI.Xaml.Controls" 
-    RequestedTheme="Light"
-    xmlns:ticket="using:CloudSpritzers1.src.model.ticket"
-    xmlns:dto ="using:CloudSpritzers1.src.dto"
-    Background="#f9fafb">
+   x:Class="CloudSpritzers1.src.view.TicketEmployeeView"
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+   xmlns:controls="using:Microsoft.UI.Xaml.Controls" 
+   xmlns:ticket="using:CloudSpritzers1.src.model.ticket"
+   xmlns:dto ="using:CloudSpritzers1.src.dto"
+   RequestedTheme="Light"
+   Background="#f9fafb">
 
     <!-- ================= BUTTON STYLE ================= -->
     <Page.Resources>
@@ -80,10 +81,6 @@
                     </StackPanel>
                 </StackPanel>
 
-                <!-- CREATE BUTTON -->
-                <Button x:Name="CreateTicketButton" Content="Create new ticket" Width="180" Height="40"
-                        Style="{StaticResource TicketButtonStyle}" Click="CreateTicketButton_Click"/>
-
                 <!-- WHITE BOX FOR TICKETS -->
                 <Border Background="White" CornerRadius="8" Padding="32" BorderBrush="#e5e7eb" BorderThickness="1"
                         Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="16">
@@ -154,6 +151,11 @@
                                                     <Run Text=" | Email: "/><Run Text="{x:Bind UserEmail}"/>
                                                 </TextBlock>
 
+                                                <!-- Edit Status Button -->
+                                                <Button Content="Edit Status" Width="120" Height="32"
+                                                        Style="{StaticResource TicketButtonStyle}"
+                                                        Click="EditTicketStatus_Click"
+                                                        Tag="{x:Bind TicketId}"/>
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>
@@ -210,3 +212,4 @@
 
     </Grid>
 </Page>
+

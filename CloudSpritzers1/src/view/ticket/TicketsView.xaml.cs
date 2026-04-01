@@ -14,103 +14,37 @@ using Microsoft.UI;
 using CloudSpritzers1.src.model.ticket;
 using CloudSpritzers1.src.model;
 using System.Collections.ObjectModel;
+using CloudSpritzers1.src.dto;
+using CloudSpritzers1.src.repository;
+using CloudSpritzers1.src.service;
+using CloudSpritzers1.src.viewModel;
 
 namespace CloudSpritzers1.src.view
 {
     public sealed partial class TicketsView : Page
     {
-        public ObservableCollection<Ticket> Tickets { get; } = new ObservableCollection<Ticket>();
+        public TicketsViewModel ViewModel { get; }
+
         public TicketsView()
         {
             this.InitializeComponent();
+            var service = new TicketService(new TicketRepository());
+            ViewModel = new TicketsViewModel(service);
+            this.DataContext = ViewModel;
 
-            // Sample user and categories
-            var sampleUser = new User(1, "John Doe", "john@example.com");
-            var sampleCategory = new TicketCategory(1, "Baggage", UrgencyLevelEnum.LOW);
-            var sampleSubcategory = new TicketSubcategory(1, "Lost Items", 3, sampleCategory);
-
-            // Create ticket
-            var ticket = new Ticket(
-                ticketId: 1,
-                user: sampleUser,
-                status: StatusEnum.OPEN,
-                category: sampleCategory,
-                subcategory: sampleSubcategory,
-                subject: "Lost baggage",
-                description: "My suitcase did not arrive on time.",
-                createdAt: DateTime.Now
-            );
-
-            // Map status to color
-            SolidColorBrush statusColor = ticket.Status switch
-            {
-                StatusEnum.OPEN => new SolidColorBrush(Colors.Green),
-                StatusEnum.IN_PROGRESS => new SolidColorBrush(Colors.Orange),
-                StatusEnum.RESOLVED => new SolidColorBrush(Colors.Gray),
-                _ => new SolidColorBrush(Colors.Black)
-            };
-
-            // Create UI element manually
-            var border = new Border
-            {
-                Background = new SolidColorBrush(Colors.White),
-                CornerRadius = new CornerRadius(8),
-                Padding = new Thickness(12),
-                BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 229, 231, 235)),
-                BorderThickness = new Thickness(1),
-                Margin = new Thickness(0, 0, 0, 12)
-            };
-
-            var grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-
-            var stack = new StackPanel { Spacing = 4 };
-            stack.Children.Add(new TextBlock
-            {
-                Text = $"Ticket #{ticket.TicketId}",
-                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                FontSize = 16,
-                Foreground = new SolidColorBrush(Colors.Black)
-            });
-            stack.Children.Add(new TextBlock
-            {
-                Text = ticket.Subject,
-                FontSize = 14,
-                Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 107, 114, 128))
-            });
-            stack.Children.Add(new TextBlock
-            {
-                Text = ticket.Status.ToString(),
-                FontSize = 12,
-                Foreground = statusColor
-            });
-
-            grid.Children.Add(stack);
-
-            var viewBtn = new Button
-            {
-                Content = "View",
-                Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 43, 184, 192)),
-                Foreground = new SolidColorBrush(Colors.White),
-                Width = 80,
-                Height = 32,
-                HorizontalAlignment = HorizontalAlignment.Right,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            Grid.SetColumn(viewBtn, 1);
-            grid.Children.Add(viewBtn);
-
-            border.Child = grid;
-
-            // Add to your StackPanel container
-            Tickets.Add(ticket);
-            TicketList.ItemsSource = Tickets;
+            // Bind ItemsControl
+            TicketList.ItemsSource = ViewModel.GetAllTickets();
         }
-
         private async void CreateTicketButton_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog dialog = null;
+
+            // Input controls references
+            TextBox titleBox = null;
+            ComboBox categoryCombo = null;
+            ComboBox subcategoryCombo = null;
+            TextBox descriptionBox = null;
+            TextBox emailBox = null;
 
             // Main content panel
             var stackPanel = new StackPanel
@@ -144,7 +78,7 @@ namespace CloudSpritzers1.src.view
                 Foreground = new SolidColorBrush(Colors.Black)
             });
 
-            stackPanel.Children.Add(new TextBox
+            titleBox = new TextBox
             {
                 PlaceholderText = "e.g., Lost baggage, damaged suitcase, service complaint",
                 Width = 400,
@@ -153,7 +87,9 @@ namespace CloudSpritzers1.src.view
                 Padding = new Thickness(8),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 PlaceholderForeground = new SolidColorBrush(Colors.DarkGray)
-            });
+            };
+            stackPanel.Children.Add(titleBox);
+
             // Category
             stackPanel.Children.Add(new TextBlock
             {
@@ -162,7 +98,7 @@ namespace CloudSpritzers1.src.view
                 Foreground = new SolidColorBrush(Colors.Black)
             });
 
-            var categoryCombo = new ComboBox
+            categoryCombo = new ComboBox
             {
                 PlaceholderText = "Select a category",
                 Width = 400,
@@ -185,7 +121,7 @@ namespace CloudSpritzers1.src.view
                 Foreground = new SolidColorBrush(Colors.Black)
             });
 
-            var subcategoryCombo = new ComboBox
+            subcategoryCombo = new ComboBox
             {
                 PlaceholderText = "Select a subcategory",
                 Width = 400,
@@ -208,7 +144,7 @@ namespace CloudSpritzers1.src.view
                 Foreground = new SolidColorBrush(Colors.Black)
             });
 
-            stackPanel.Children.Add(new TextBox
+            descriptionBox = new TextBox
             {
                 PlaceholderText = "Please describe the issue in detail",
                 Width = 400,
@@ -220,7 +156,8 @@ namespace CloudSpritzers1.src.view
                 Padding = new Thickness(8),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 PlaceholderForeground = new SolidColorBrush(Colors.DarkGray)
-            });
+            };
+            stackPanel.Children.Add(descriptionBox);
 
             // Email
             stackPanel.Children.Add(new TextBlock
@@ -230,7 +167,7 @@ namespace CloudSpritzers1.src.view
                 Foreground = new SolidColorBrush(Colors.Black)
             });
 
-            stackPanel.Children.Add(new TextBox
+            emailBox = new TextBox
             {
                 PlaceholderText = "your.email@example.com",
                 Width = 400,
@@ -239,20 +176,10 @@ namespace CloudSpritzers1.src.view
                 Padding = new Thickness(8),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 PlaceholderForeground = new SolidColorBrush(Colors.DarkGray)
-            });
+            };
+            stackPanel.Children.Add(emailBox);
 
-
-            // Notification text
-            stackPanel.Children.Add(new TextBlock
-            {
-                Text = "You will receive email notifications when your ticket status changes.",
-                FontSize = 12,
-                Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 107, 114, 128)),
-                TextWrapping = TextWrapping.Wrap,
-                Margin = new Thickness(0, 8, 0, 0)
-            });
-
-            // Buttons panel aligned to left, Send first
+            // Buttons
             var buttonPanel = new StackPanel
             {
                 Orientation = Orientation.Horizontal,
@@ -261,7 +188,6 @@ namespace CloudSpritzers1.src.view
                 Margin = new Thickness(0, 12, 0, 0)
             };
 
-            // Send button first
             var sendBtn = new Button
             {
                 Content = "Send",
@@ -269,13 +195,107 @@ namespace CloudSpritzers1.src.view
                 Foreground = new SolidColorBrush(Colors.White),
                 Padding = new Thickness(12, 6, 12, 6)
             };
-            sendBtn.Click += (s, args) =>
+            sendBtn.Click += async (s, args) =>
             {
-                // TODO: Add send logic here
-                dialog?.Hide();
+                try
+                {
+                    StatusEnum Status = StatusEnum.OPEN;
+                    UrgencyLevelEnum UrgencyLevel = UrgencyLevelEnum.LOW;
+
+                    int TicketId = ViewModel.NrTickets() + 1;
+                    string Subject = titleBox.Text;
+                    string Description = descriptionBox.Text;
+                    DateTime CreatedAt = DateTime.Now;
+                    string UserEmail = emailBox.Text;
+
+                    int UserId = 1;
+                    string CategoryName = categoryCombo.SelectedItem?.ToString() ?? "General";
+                    int CategoryId = 1;
+
+                    string SubcategoryName = subcategoryCombo.SelectedItem?.ToString() ?? "General";
+                    int SubcategoryId = 1;
+
+                    var newTicket = new TicketDTO(
+                        TicketId,
+                        UserId,
+                        UserEmail,
+                        UrgencyLevel,
+                        Status,
+                        CategoryId,
+                        CategoryName,
+                        SubcategoryId,
+                        SubcategoryName,
+                        Subject,
+                        Description,
+                        CreatedAt
+                    );
+
+                    ViewModel.CreateTicket(newTicket);
+
+                    dialog?.Hide();
+                }
+                catch (Exception ex)
+                {
+                    dialog?.Hide();
+
+                    var closeBtn = new Button
+                    {
+                        Content = "OK",
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        Margin = new Thickness(0, 20, 0, 0)
+                    };
+
+                    var errorPanel = new StackPanel
+                    {
+                        Spacing = 12,
+                        Width = 320
+                    };
+
+                    errorPanel.Children.Add(new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        Spacing = 10,
+                        Children =
+                            {
+                                new FontIcon
+                                {
+                                    Glyph = "\uEA39", // Error icon
+                                    FontFamily = new FontFamily("Segoe MDL2 Assets"),
+                                    Foreground = new SolidColorBrush(Colors.Red),
+                                    FontSize = 28,
+                                    VerticalAlignment = VerticalAlignment.Center
+                                },
+                                new TextBlock
+                                {
+                                    Text = "Ticket creation failed :(",
+                                    FontSize = 18,
+                                    VerticalAlignment = VerticalAlignment.Center
+                                }
+                            }
+                    });
+
+                    errorPanel.Children.Add(new TextBlock
+                    {
+                        Text = ex.Message,
+                        TextWrapping = TextWrapping.Wrap
+                    });
+
+                    errorPanel.Children.Add(closeBtn);
+
+                    var errorDialog = new ContentDialog
+                    {
+                        Content = errorPanel,
+                        XamlRoot = this.XamlRoot,
+                        DefaultButton = ContentDialogButton.None   // removes bottom bar
+                    };
+
+                    closeBtn.Click += (_, _) => errorDialog.Hide();
+
+                    await errorDialog.ShowAsync();
+                }
             };
 
-            // Cancel button second
+
             var cancelBtn = new Button
             {
                 Content = "Cancel",
@@ -283,17 +303,7 @@ namespace CloudSpritzers1.src.view
                 Foreground = new SolidColorBrush(Colors.Black),
                 BorderBrush = new SolidColorBrush(Colors.Black),
                 BorderThickness = new Thickness(1),
-                Padding = new Thickness(12, 6, 12, 6),
-            };
-            cancelBtn.PointerEntered += (s, args) =>
-            {
-                cancelBtn.Background = new SolidColorBrush(Colors.White);
-                cancelBtn.Foreground = new SolidColorBrush(Colors.Black);
-            };
-            cancelBtn.PointerExited += (s, args) =>
-            {
-                cancelBtn.Background = new SolidColorBrush(Colors.White);
-                cancelBtn.Foreground = new SolidColorBrush(Colors.Black);
+                Padding = new Thickness(12, 6, 12, 6)
             };
             cancelBtn.Click += (s, args) => dialog?.Hide();
 
@@ -318,5 +328,21 @@ namespace CloudSpritzers1.src.view
 
             await dialog.ShowAsync();
         }
+        private void FilterChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ViewModel == null)
+                return;
+
+            var combo = sender as ComboBox;
+
+            if (combo?.SelectedItem is not ComboBoxItem selected)
+                return;
+
+            if (selected.Tag == null)
+                return;
+
+            ViewModel.SelectedFilterString = selected.Tag.ToString();
+        }
     }
+
 }
