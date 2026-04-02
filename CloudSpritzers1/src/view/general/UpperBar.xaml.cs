@@ -1,4 +1,6 @@
-﻿using CloudSpritzers1.src.viewModel.general;
+﻿using CloudSpritzers1.src.model;
+using CloudSpritzers1.src.model.employee;
+using CloudSpritzers1.src.viewModel.general;
 using CloudSpritzers1.src.viewModel.review;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -11,11 +13,19 @@ namespace CloudSpritzers1.src.view.general
 
         public UpperBarViewModel ViewModel { get; }
 
+        private User _user;
+        private Employee _employee;
+
         public UpperBar()
         {
             this.InitializeComponent();
+
+            _user = ((App)App.Current).User;
+            _employee = ((App)App.Current).Employee;
+
             ViewModel = (App.Current as App).Services.GetService<UpperBarViewModel>();
             this.DataContext = ViewModel;
+            ViewModel.IsEmployee = !(App.Current as App).isEmployee;
         }
 
         private DependencyObject FindParentFrame()
@@ -64,7 +74,10 @@ namespace CloudSpritzers1.src.view.general
         {
             if (FindParentFrame() is Frame frame)
             {
-                frame.Navigate(typeof(CloudSpritzers1.src.view.review.ReviewPage));
+                if(_user != null)
+                    frame.Navigate(typeof(CloudSpritzers1.src.view.review.ReviewPage));
+                else
+                    frame.Navigate(typeof(CloudSpritzers1.src.view.review.EmployeeSeeReviews));
             }
         }
     }

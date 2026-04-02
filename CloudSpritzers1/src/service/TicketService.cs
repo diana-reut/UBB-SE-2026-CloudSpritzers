@@ -72,12 +72,14 @@ namespace CloudSpritzers1.src.service
         {
             Ticket elem = _ticketRepository.GetById(ticketId);
             elem.ChangeUrgencyLevel(urgencyLevel);
+            _ticketRepository.UpdateById(ticketId, elem);
         }
 
         public void UpdateStatus(int ticketId, StatusEnum status)
         {
             Ticket elem = _ticketRepository.GetById(ticketId);
             elem.UpdateStatus(status);
+            _ticketRepository.UpdateById(ticketId, elem);
         }
 
     }

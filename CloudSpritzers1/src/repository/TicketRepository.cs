@@ -9,6 +9,11 @@ namespace CloudSpritzers1.src.repository
 {
     public class TicketRepository : DBRepository<int, Ticket>, IRepository<int, Ticket>
     {
+
+        private UserRepository _userRepository = new UserRepository();
+
+        private TicketCategoryRepository _categoryRepository = new TicketCategoryRepository();
+        private TicketSubcategoryRepository _subcategoryRepository = new TicketSubcategoryRepository();
         public TicketRepository() { }
 
         public Ticket GetById(int id)
@@ -30,6 +35,7 @@ namespace CloudSpritzers1.src.repository
             string query = "SELECT * FROM Ticket";
             SqlCommand command = new SqlCommand(query);
             return base.GetAll(command);
+
         }
 
         public int Add(Ticket elem)
@@ -100,17 +106,17 @@ namespace CloudSpritzers1.src.repository
         {
             int ticketId = reader.GetInt32(reader.GetOrdinal("ticket_id"));
             int userId = reader.GetInt32(reader.GetOrdinal("user_id"));
-            StatusEnum status = Enum.Parse<StatusEnum>(reader.GetString(reader.GetOrdinal("status")).ToString());
+            StatusEnum status = Enum.Parse<StatusEnum>(reader.GetString(reader.GetOrdinal("status")),ignoreCase: true);
             int categoryId = reader.GetInt32(reader.GetOrdinal("category_id"));
             int subcategoryId = reader.GetInt32(reader.GetOrdinal("subcategory_id"));
             string subject = reader.GetString(reader.GetOrdinal("subject"));
             string description = reader.GetString(reader.GetOrdinal("description"));
             DateTime createdAt = reader.GetDateTime(reader.GetOrdinal("created_at"));
-            UrgencyLevelEnum urgency = Enum.Parse<UrgencyLevelEnum>(reader.GetString(reader.GetOrdinal("urgency_level")).ToString());
+            UrgencyLevelEnum urgency = Enum.Parse<UrgencyLevelEnum>(reader.GetString(reader.GetOrdinal("urgency_level")),ignoreCase:true);
 
-            TicketCategory category = new TicketCategory(categoryId, string.Empty, urgency);
-            TicketSubcategory subcategory = new TicketSubcategory(subcategoryId, string.Empty, 0, category);
-            User user = new User(userId, string.Empty, string.Empty);
+            TicketCategory category = _categoryRepository.GetById(categoryId);
+            TicketSubcategory subcategory = _subcategoryRepository.GetById(subcategoryId);
+            User user = _userRepository.GetById(userId);
 
             return new Ticket(ticketId, user, status, category, subcategory, subject, description, createdAt, urgency);
         }

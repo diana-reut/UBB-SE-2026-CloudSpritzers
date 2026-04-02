@@ -4,8 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:CloudSpritzers1.src.converter"
     mc:Ignorable="d"
     VerticalAlignment="Top">
+
+    <UserControl.Resources>
+        <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
 
     <Grid Background="White" 
       Padding="20,5" 
@@ -34,7 +39,8 @@
         </Button>
 
         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="30">
-            <Button Style="{StaticResource TextBlockButtonStyle}" Foreground="{ThemeResource NavyBrush}" Click="NavigateToChat">
+            <Button Style="{StaticResource TextBlockButtonStyle}" Foreground="{ThemeResource Navybrush}" Click="NavigateToChat"
+                   Visibility="{x:Bind ViewModel.IsEmployee, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE8BD;" FontSize="16"/>
                     <TextBlock Text="Chat" VerticalAlignment="Center"/>

@@ -154,6 +154,7 @@
                             </StackPanel>
 
                             <Button Grid.Column="2"
+                            Click="OnClick"
                             Content="Get help"
                             Background="{ThemeResource PrimaryBrush}"
                             Foreground="White"

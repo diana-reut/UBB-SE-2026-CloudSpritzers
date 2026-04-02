@@ -25,6 +25,7 @@
 		<None Remove="src\view\general\MaiBoule.xaml" />
 		<None Remove="src\view\review\EmployeeSeeReviews.xaml" />
 		<None Remove="src\view\review\ReviewPage.xaml" />
+		<None Remove="src\view\ticket\TicketEmployeeView.xaml" />
 	</ItemGroup>
 	<ItemGroup>
 		<Page Remove="ChatPage.xaml" />
@@ -73,6 +74,9 @@
 		<None Update="src\view\chat\ChatPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</None>
+		<Page Update="src\view\ticket\TicketEmployeeView.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
 		<Page Update="src\view\general\MaiBoule.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</Page>

@@ -32,6 +32,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using CloudSpritzers1.src.viewModel.general;
+using CloudSpritzers1.src.viewModel;
 
 namespace CloudSpritzers1
 {
@@ -104,6 +105,16 @@ namespace CloudSpritzers1
             services.AddTransient<ChatViewModel>();
             
             services.AddTransient<UpperBarViewModel>();
+            
+            services.AddSingleton<TicketRepository>();
+            services.AddSingleton<TicketCategoryRepository>();
+            services.AddSingleton<TicketSubcategoryRepository>();
+
+            services.AddSingleton<TicketService>();
+            services.AddSingleton<TicketCategoryService>();
+            services.AddSingleton<TicketSubcategoryService>();
+
+            services.AddTransient<TicketsViewModel>();
 
             return services.BuildServiceProvider();
         }

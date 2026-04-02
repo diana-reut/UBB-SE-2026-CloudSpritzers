@@ -2,16 +2,18 @@ use CloudSpritzers
 go
 
 
---drop table if exists FAQEntry
---drop table if exists [Message] 
---drop table if exists Chat
---drop table if exists Sender
---drop table if exists Review
---drop table if exists Ticket
---drop table if exists TicketSubcategory
---drop table if exists TicketCategory
---drop table if exists [User]
---drop table if exists Employee
+drop table if exists FAQEntry
+drop table if exists [Message] 
+drop table if exists Chat
+drop table if exists Sender
+drop table if exists Review
+drop table if exists Ticket
+drop table if exists TicketSubcategory
+drop table if exists TicketCategory
+drop table if exists [User]
+drop table if exists Employee
+drop table if exists FAQOption
+drop table if exists FAQNode
 
 
 create table Employee(
@@ -80,18 +82,6 @@ create table Review(
 	)
 )
 
-create table Sender(
-	sender_id int identity(1,1),
-	constraint PK_Sender primary key (sender_id),
-	employee_id int default NULL,
-	constraint FK_Sender_Employee foreign key (employee_id) references Employee(employee_id),
-	[user_id] int default NULL,
-	constraint FK_Sender_User foreign key ([user_id]) references [User]([user_id]),
-	constraint CHK_Sender_UserOrEmployee check (
-		(employee_id is not NULL and [user_id] is NULL) or
-		([user_id] is not NULL and employee_id is NULL)
-	)
-)
 
 create table Chat(
 	chat_id int identity(1,1),
@@ -107,7 +97,7 @@ create table [Message](
 	message_id int identity(1,1),
 	constraint PK_Message primary key (message_id),
 	sender_id int,
-	constraint FK_Message_Sender foreign key (sender_id) references Sender(sender_id),
+	constraint FK_Message_User foreign key (sender_id) references [User]([user_id]),
 	chat_id int,
 	constraint FK_Message_Chat foreign key (chat_id) references Chat(chat_id),
 	[timestamp] datetime,
@@ -129,4 +119,21 @@ create table FAQEntry(
 		(was_helpful_votes >= 0) and
 		(was_not_helpful_votes >= 0)
 	)
+)
+
+create table FAQNode (
+	node_id int identity(1,1),
+	constraint PK_Node primary key (node_id),
+	question_text nvarchar(255),
+	is_final_answer bit
+)
+
+create table FAQOption (
+	option_id int identity(1,1),
+	constraint PK_Option primary key (option_id),
+	node_id int,
+	constraint FK_ParentNode foreign key (node_id) references FAQNode(node_id),
+	[label] nvarchar(255),
+	next_option_id int,
+	constraint FK_NextNode foreign key (next_option_id) references FAQNode(node_id),
 )

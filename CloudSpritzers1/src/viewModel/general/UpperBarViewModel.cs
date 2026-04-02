@@ -19,13 +19,20 @@ namespace CloudSpritzers1.src.viewModel.general
             _employee = ((App)App.Current).Employee;
         }
 
+        private bool _isEmployee;
+        public bool IsEmployee
+        {
+            get => _isEmployee;
+            set => SetProperty(ref _isEmployee, value); // This triggers the UI update
+        }
+
         public string UserId 
         {
             get {
-                if(_user != null) {
+                if(IsEmployee) {
                     return $"ID: {_user.GetId()}";
                 }
-                return _employee != null ? $"ID: {_employee.GetId()}" : "Not signed in";
+                return IsEmployee ? $"ID: {_employee.GetId()}" : "Not signed in";
             }
          }
     }
