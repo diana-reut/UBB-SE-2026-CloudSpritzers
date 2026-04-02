@@ -10,7 +10,7 @@
     <Grid Background="White" 
       Padding="20,5" 
       Height="70" 
-      BorderBrush="#E0E0E0" 
+      BorderBrush="{ThemeResource CardBackgroundBrush}" 
       BorderThickness="0,0,0,1">
 
         <Grid.ColumnDefinitions>
@@ -27,35 +27,35 @@
                 <TextBlock Text="CloudSpritzers" 
                    FontSize="22" 
                    FontWeight="Bold" 
-                   Foreground="#001B3D"
+                   Foreground="{ThemeResource NavyBrush}"
                    Margin="10,0,0,0" 
                    VerticalAlignment="Center"/>
             </StackPanel>
         </Button>
 
         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="30">
-            <Button Style="{StaticResource TextBlockButtonStyle}" Foreground="#001B3D" Click="NavigateToChat">
+            <Button Style="{StaticResource TextBlockButtonStyle}" Foreground="{ThemeResource NavyBrush}" Click="NavigateToChat">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE8BD;" FontSize="16"/>
                     <TextBlock Text="Chat" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
 
-            <Button Style="{StaticResource TextBlockButtonStyle}" Foreground="#001B3D" Click="NavigateToFAQ">
+            <Button Style="{StaticResource TextBlockButtonStyle}" Foreground="{ThemeResource NavyBrush}" Click="NavigateToFAQ">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE11B;" FontSize="16"/>
                     <TextBlock Text="FAQ" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
 
-            <Button Style="{StaticResource TextBlockButtonStyle}" Foreground="#001B3D" Click="NavigateToTickets">
+            <Button Style="{StaticResource TextBlockButtonStyle}" Foreground="{ThemeResource NavyBrush}" Click="NavigateToTickets">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE8A1;" FontSize="16"/>
                     <TextBlock Text="Tickets" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
 
-            <Button Style="{StaticResource TextBlockButtonStyle}" Foreground="#001B3D" Click="NavigateToReviews">
+            <Button Style="{StaticResource TextBlockButtonStyle}" Foreground="{ThemeResource NavyBrush}" Click="NavigateToReviews">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE734;" FontSize="16"/>
                     <TextBlock Text="Reviews" VerticalAlignment="Center"/>
@@ -69,8 +69,8 @@
             VerticalAlignment="Center">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid HorizontalAlignment="Center" Margin="0,0,0,2">
-                    <Ellipse Width="34" Height="34" Fill="#F2F2F2"/>
-                    <FontIcon Glyph="&#xE77B;" FontSize="18" Foreground="#001B3D"
+                    <Ellipse Width="34" Height="34" Fill="{ThemeResource CardBackgroundBrush}"/>
+                    <FontIcon Glyph="&#xE77B;" FontSize="18" Foreground="{ThemeResource NavyBrush}"
                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Grid>
                 <TextBlock Text="{Binding UserId}"

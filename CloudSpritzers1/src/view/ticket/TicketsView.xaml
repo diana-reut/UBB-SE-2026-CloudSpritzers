@@ -5,14 +5,14 @@
     xmlns:controls="using:Microsoft.UI.Xaml.Controls" 
     RequestedTheme="Light"
     xmlns:ticket="using:CloudSpritzers1.src.model.ticket"
-    Background="#f9fafb">
+    Background="{ThemeResource CardBackgroundBrush}">
 
     <!-- ================= BUTTON STYLE ================= -->
     <Page.Resources>
         <Style x:Key="TicketButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#2bb8c0"/>
+            <Setter Property="Background" Value="{ThemeResource PrimaryVariantBrush}"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#2bb8c0"/>
+            <Setter Property="BorderBrush" Value="{ThemeResource PrimaryVariantBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -66,18 +66,18 @@
 
                 <!-- HEADER -->
                 <StackPanel Orientation="Horizontal" Spacing="16">
-                    <Border Width="60" Height="60" CornerRadius="8" Background="#2bb8c0">
+                    <Border Width="60" Height="60" CornerRadius="8" Background="{ThemeResource PrimaryVariantBrush}">
                         <Grid>
                             <Path Fill="White" Stretch="Uniform" Width="34" Height="34"
                                   Data="M4,10 A2,2 0 0 1 6,8 H26 A2,2 0 0 1 28,10 V14 A2,2 0 0 0 28,18 V22 A2,2 0 0 1 26,24 H6 A2,2 0 0 1 4,22 V18 A2,2 0 0 0 4,14 Z"/>
-                            <Line X1="18" Y1="16" X2="18" Y2="44" Stroke="#2bb8c0" StrokeThickness="2" StrokeDashArray="2,2"
+                            <Line X1="18" Y1="16" X2="18" Y2="44" Stroke="{ThemeResource PrimaryVariantBrush}" StrokeThickness="2" StrokeDashArray="2,2"
                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                     </Border>
 
                     <StackPanel>
                         <TextBlock Text="Support Tickets" FontSize="28" FontWeight="SemiBold" Foreground="Black"/>
-                        <TextBlock Width="600" TextWrapping="Wrap" Foreground="#6b7280"
+                        <TextBlock Width="600" TextWrapping="Wrap" Foreground="{ThemeResource SecondaryTextBrush}"
                                    Text="Submit and track your support requests. You'll receive email notifications when your ticket status changes."/>
                     </StackPanel>
                 </StackPanel>
@@ -87,7 +87,7 @@
                         Style="{StaticResource TicketButtonStyle}" Click="CreateTicketButton_Click"/>
 
                 <!-- WHITE BOX FOR TICKETS -->
-                <Border Background="White" CornerRadius="8" Padding="32" BorderBrush="#e5e7eb" BorderThickness="1"
+                <Border Background="White" CornerRadius="8" Padding="32" BorderBrush="{ThemeResource CardBackgroundBrush}" BorderThickness="1"
                         Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="16">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -104,7 +104,7 @@
 
                             <StackPanel Orientation="Vertical" Spacing="4">
                                 <TextBlock Text="Tickets" FontSize="28" FontWeight="SemiBold" Foreground="Black"/>
-                                <TextBlock Text="Track the status of your submitted tickets" FontSize="14" Foreground="#6b7280"/>
+                                <TextBlock Text="Track the status of your submitted tickets" FontSize="14" Foreground="{ThemeResource SecondaryTextBrush}"/>
                             </StackPanel>
 
                             <Grid Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top">
@@ -112,8 +112,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="180"/>
                                 </Grid.ColumnDefinitions>
-                                <SymbolIcon Symbol="Filter" Foreground="#6b7280" VerticalAlignment="Center" Width="24" Height="24" Margin="0,0,8,0"/>
-                                <ComboBox Grid.Column="1" Width="180" Background="#e5e7eb" Foreground="Black" PlaceholderText="Filter tickets" SelectedIndex="0">
+                                <SymbolIcon Symbol="Filter" Foreground="{ThemeResource SecondaryTextBrush}" VerticalAlignment="Center" Width="24" Height="24" Margin="0,0,8,0"/>
+                                <ComboBox Grid.Column="1" Width="180" Background="{ThemeResource CardBackgroundBrush}" Foreground="Black" PlaceholderText="Filter tickets" SelectedIndex="0">
                                     <ComboBoxItem Content="All Tickets"/>
                                     <ComboBoxItem Content="Open"/>
                                     <ComboBoxItem Content="In Progress"/>
@@ -127,7 +127,7 @@
                             <ItemsControl x:Name="TicketList">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="ticket:Ticket">
-                                        <Border Background="White" CornerRadius="8" Padding="16" BorderBrush="#e5e7eb" BorderThickness="1" Margin="0,0,0,16">
+                                        <Border Background="White" CornerRadius="8" Padding="16" BorderBrush="{ThemeResource CardBackgroundBrush}" BorderThickness="1" Margin="0,0,0,16">
                                             <StackPanel Spacing="16">
 
                                                 <Grid>
@@ -136,20 +136,20 @@
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
 
-                                                    <TextBlock Text="{x:Bind TicketId}" FontSize="12" Foreground="#6b7280" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{x:Bind TicketId}" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}" VerticalAlignment="Center"/>
                                                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                                                        <Border CornerRadius="4" Padding="6,2" Background="#dbeafe">
-                                                            <TextBlock Text="{x:Bind Status}" FontSize="12" Foreground="#383cb8"/>
+                                                        <Border CornerRadius="4" Padding="6,2" Background="{ThemeResource InfoBadgeBackgroundColor}">
+                                                            <TextBlock Text="{x:Bind Status}" FontSize="12" Foreground="{ThemeResource InfoBadgeForegroundColor}"/>
                                                         </Border>
-                                                        <Border CornerRadius="4" Padding="6,2" Background="#ffe2e2">
-                                                            <TextBlock Text="{x:Bind UrgencyLevel}" FontSize="12" Foreground="#aa161e"/>
+                                                        <Border CornerRadius="4" Padding="6,2" Background="{ThemeResource ErrorBadgeBackgroundColor}">
+                                                            <TextBlock Text="{x:Bind UrgencyLevel}" FontSize="12" Foreground="{ThemeResource ErrorBrush}"/>
                                                         </Border>
                                                     </StackPanel>
                                                 </Grid>
 
                                                 <TextBlock Text="{x:Bind Subject}" FontSize="16" FontWeight="SemiBold" Foreground="Black"/>
-                                                <TextBlock Text="{x:Bind Description}" FontSize="14" Foreground="#6b7280" TextWrapping="Wrap"/>
-                                                <TextBlock FontSize="12" Foreground="#6b7280" TextWrapping="Wrap">
+                                                <TextBlock Text="{x:Bind Description}" FontSize="14" Foreground="{ThemeResource SecondaryTextBrush}" TextWrapping="Wrap"/>
+                                                <TextBlock FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}" TextWrapping="Wrap">
                                                     <Run Text="Category: "/><Run Text="{x:Bind Category.Name}"/>
                                                     <Run Text=" | Subcategory: "/><Run Text="{x:Bind Subcategory.SubcategoryName}"/>
                                                     <Run Text=" | Created: "/><Run Text="{x:Bind CreatedAt}"/>
@@ -177,34 +177,34 @@
             </Grid.ColumnDefinitions>
 
             <!-- Open -->
-            <Border Grid.Column="0" Background="#fff4e5" CornerRadius="8" Padding="16">
+            <Border Grid.Column="0" Background="{ThemeResource StatusOpenBackgroundColor}" CornerRadius="8" Padding="16">
                 <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <SymbolIcon Symbol="Clock" Foreground="#ffb347"/>
+                    <SymbolIcon Symbol="Clock" Foreground="{ThemeResource WarningBrush}"/>
                     <StackPanel>
                         <TextBlock Text="Open" FontWeight="SemiBold" Foreground="Black"/>
-                        <TextBlock Text="Your ticket has been received and is awaiting review" FontSize="12" Foreground="#6b7280" TextWrapping="Wrap"/>
+                        <TextBlock Text="Your ticket has been received and is awaiting review" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}" TextWrapping="Wrap"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
 
             <!-- In Progress -->
-            <Border Grid.Column="1" Background="#e5f0ff" CornerRadius="8" Padding="16">
+            <Border Grid.Column="1" Background="{ThemeResource StatusInProgressBackgroundColor}" CornerRadius="8" Padding="16">
                 <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <SymbolIcon Symbol="Sync" Foreground="#5ca0ff"/>
+                    <SymbolIcon Symbol="Sync" Foreground="{ThemeResource InfoBrush}"/>
                     <StackPanel>
                         <TextBlock Text="In Progress" FontWeight="SemiBold" Foreground="Black"/>
-                        <TextBlock Text="An employee is currently investigating or resolving your issue" FontSize="12" Foreground="#6b7280" TextWrapping="Wrap"/>
+                        <TextBlock Text="An employee is currently investigating or resolving your issue" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}" TextWrapping="Wrap"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
 
             <!-- Resolved -->
-            <Border Grid.Column="2" Background="#e6ffed" CornerRadius="8" Padding="16">
+            <Border Grid.Column="2" Background="{ThemeResource StatusResolvedBackgroundColor}" CornerRadius="8" Padding="16">
                 <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <SymbolIcon Symbol="Accept" Foreground="#22c55e"/>
+                    <SymbolIcon Symbol="Accept" Foreground="{ThemeResource SuccessBrush}"/>
                     <StackPanel>
                         <TextBlock Text="Resolved" FontWeight="SemiBold" Foreground="Black"/>
-                        <TextBlock Text="Your issue has been addressed and the ticket is closed" FontSize="12" Foreground="#6b7280" TextWrapping="Wrap"/>
+                        <TextBlock Text="Your issue has been addressed and the ticket is closed" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}" TextWrapping="Wrap"/>
                     </StackPanel>
                 </StackPanel>
             </Border>

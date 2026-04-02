@@ -44,7 +44,7 @@
                               Width="48"
                               Height="48"
                               CornerRadius="24"
-                              Background="#2CB1A6">
+                              Background="{ThemeResource PrimaryBrush}">
                                 <FontIcon Glyph="&#xE715;"
                                       Foreground="White"
                                       FontSize="20"
@@ -79,12 +79,9 @@
 
                             <!-- Button -->
                             <Button Content="Continue"
-                                Height="40"
-                                Click="Button_Click" 
-                                Background="#2CB1A6"
-                                Foreground="White"
-                                HorizontalAlignment="Stretch"
-                                CornerRadius="6"/>
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Click="Button_Click"
+                                HorizontalAlignment="Stretch"/>
 
                         </StackPanel>
                     </Border>

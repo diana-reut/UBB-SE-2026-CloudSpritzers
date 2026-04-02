@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="#23A6B1">
+    Background="{ThemeResource PrimaryBrush}">
 
     <Grid>
         <StackPanel VerticalAlignment="Center" Spacing="30">
@@ -23,7 +23,7 @@
                         <FontIcon Glyph="&#xE77B;" FontSize="60" Foreground="Black"/>
                         <TextBlock Text="I'm a Customer" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="Black"/>
                         <TextBlock Text="Access customer support, submit tickets, and chat with our team." 
-                                   TextWrapping="Wrap" TextAlignment="Center" Foreground="#555555"/>
+                                   TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource SecondaryTextBrush}"/>
                     </StackPanel>
                 </Button>
 
@@ -32,7 +32,7 @@
                         <FontIcon Glyph="&#xE7EE;" FontSize="60" Foreground="Black"/>
                         <TextBlock Text="I'm an Employee" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="Black"/>
                         <TextBlock Text="Access employee portal, manage tickets, and internal resources." 
-                                   TextWrapping="Wrap" TextAlignment="Center" Foreground="#555555"/>
+                                   TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource SecondaryTextBrush}"/>
                     </StackPanel>
                 </Button>
 

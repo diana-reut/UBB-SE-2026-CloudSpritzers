@@ -17,7 +17,7 @@
             Style="{StaticResource CardStyle}"
             MaxWidth="400"
             HorizontalAlignment="{x:Bind ViewModel.IsOutgoing, Converter={StaticResource AlignConverter}, Mode=OneWay}"
-            BorderBrush="#E0E0E0"
+            BorderBrush="{ThemeResource CardBackgroundBrush}"
             BorderThickness="1">
         <StackPanel>
             <TextBlock x:Name="SenderLabel"

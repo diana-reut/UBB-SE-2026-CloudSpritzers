@@ -14,13 +14,13 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Background="White"
-                BorderBrush="#256D85"
+                BorderBrush="{ThemeResource PrimaryBrush}"
                 BorderThickness="1"
                 CornerRadius="12"
                 Padding="0">
 
             <StackPanel>
-                <Border Background="#2CC7CF"
+                <Border Background="{ThemeResource PrimaryVariantBrush}"
                         Height="8"
                         CornerRadius="12,12,0,0"/>
 
@@ -30,21 +30,21 @@
                                 Text="Add FAQ"
                                FontSize="28"
                                FontWeight="SemiBold"
-                               Foreground="#1F2937"/>
+                               Foreground="{ThemeResource DeepTextBrush}"/>
 
                     <TextBlock x:Name="PageSubtitleText"
                                Text="Create a frequently asked question entry"
                                FontSize="13"
-                               Foreground="#6B7280"
+                               Foreground="{ThemeResource SecondaryTextBrush}"
                                Margin="0,-8,0,4"/>
 
                     <StackPanel Spacing="8">
                         <TextBlock Text="Category"
                                    FontSize="14"
                                    FontWeight="SemiBold"
-                                   Foreground="#256D85"/>
-                        <Border Background="#F9FEFF"
-                                BorderBrush="#A8DDE3"
+                                   Foreground="{ThemeResource PrimaryBrush}"/>
+                        <Border Background="{ThemeResource CardBackgroundBrush}"
+                                BorderBrush="{ThemeResource PrimaryBorderBrush}"
                                 BorderThickness="1"
                                 CornerRadius="8"
                                 Padding="10,2">
@@ -54,7 +54,7 @@
                                       MinHeight="44"
                                       Background="Transparent"
                                       RequestedTheme="Light"
-                                      Foreground="#111827"
+                                      Foreground="{ThemeResource DeepTextBrush}"
                                       BorderThickness="0">
                                 <ComboBoxItem Content="CheckIn"/>
                                 <ComboBoxItem Content="Parking"/>
@@ -70,9 +70,9 @@
                         <TextBlock Text="Question"
                                    FontSize="14"
                                    FontWeight="SemiBold"
-                                   Foreground="#256D85"/>
-                        <Border Background="#F9FEFF"
-                                BorderBrush="#A8DDE3"
+                                   Foreground="{ThemeResource PrimaryBrush}"/>
+                        <Border Background="{ThemeResource CardBackgroundBrush}"
+                                BorderBrush="{ThemeResource PrimaryBorderBrush}"
                                 BorderThickness="1"
                                 CornerRadius="8"
                                 Padding="10,6">
@@ -83,7 +83,7 @@
                                      MinHeight="44"
                                      Background="Transparent"
                                      BorderThickness="0"
-                                     Foreground="#111827">
+                                     Foreground="{ThemeResource DeepTextBrush}">
                                 <TextBox.Resources>
                                     <SolidColorBrush x:Key="TextControlBackground" Color="Transparent"/>
                                     <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent"/>
@@ -92,11 +92,11 @@
                                     <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="Transparent"/>
                                     <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="Transparent"/>
                                     <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="Transparent"/>
-                                    <SolidColorBrush x:Key="TextControlForeground" Color="#111827"/>
-                                    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#111827"/>
-                                    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="#111827"/>
-                                    <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="#9CA3AF"/>
-                                    <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#94A3B8"/>
+                                    <SolidColorBrush x:Key="TextControlForeground" Color="{ThemeResource DeepTextColor}"/>
+                                    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="{ThemeResource DeepTextColor}"/>
+                                    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="{ThemeResource DeepTextColor}"/>
+                                    <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="{ThemeResource SecondaryTextColor}"/>
+                                    <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{ThemeResource SecondaryTextColor}"/>
                                 </TextBox.Resources>
                             </TextBox>
                         </Border>
@@ -106,9 +106,9 @@
                         <TextBlock Text="Answer"
                                    FontSize="14"
                                    FontWeight="SemiBold"
-                                   Foreground="#256D85"/>
-                        <Border Background="#F9FEFF"
-                                BorderBrush="#A8DDE3"
+                                   Foreground="{ThemeResource PrimaryBrush}"/>
+                        <Border Background="{ThemeResource CardBackgroundBrush}"
+                                BorderBrush="{ThemeResource PrimaryBorderBrush}"
                                 BorderThickness="1"
                                 CornerRadius="8"
                                 Padding="10,6">
@@ -120,7 +120,7 @@
                                      Height="140"
                                      Background="Transparent"
                                      BorderThickness="0"
-                                     Foreground="#111827">
+                                     Foreground="{ThemeResource DeepTextBrush}">
                                 <TextBox.Resources>
                                     <SolidColorBrush x:Key="TextControlBackground" Color="Transparent"/>
                                     <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent"/>
@@ -129,11 +129,11 @@
                                     <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="Transparent"/>
                                     <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="Transparent"/>
                                     <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="Transparent"/>
-                                    <SolidColorBrush x:Key="TextControlForeground" Color="#111827"/>
-                                    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#111827"/>
-                                    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="#111827"/>
-                                    <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="#9CA3AF"/>
-                                    <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#94A3B8"/>
+                                    <SolidColorBrush x:Key="TextControlForeground" Color="{ThemeResource DeepTextColor}"/>
+                                    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="{ThemeResource DeepTextColor}"/>
+                                    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="{ThemeResource DeepTextColor}"/>
+                                    <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="{ThemeResource SecondaryTextColor}"/>
+                                    <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{ThemeResource SecondaryTextColor}"/>
                                 </TextBox.Resources>
                             </TextBox>
                         </Border>
@@ -147,49 +147,49 @@
                         <Button x:Name="CancelButton"
                                 Content="Cancel"
                                 Click="CancelButton_Click"
-                                Background="#E6F7F9"
-                                Foreground="#256D85"
-                                BorderBrush="#BFE8EC"
+                                Background="{ThemeResource CardBackgroundBrush}"
+                                Foreground="{ThemeResource PrimaryBrush}"
+                                BorderBrush="{ThemeResource PrimaryBorderBrush}"
                                 BorderThickness="1"
                                 CornerRadius="8"
                                 Padding="18,10">
                             <Button.Resources>
-                                <SolidColorBrush x:Key="ButtonBackground" Color="#E6F7F9"/>
+                                <SolidColorBrush x:Key="ButtonBackground" Color="{ThemeResource CardBackgroundColor}"/>
                                 <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#D6F1F4"/>
                                 <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#C4E8ED"/>
                                 <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="#F3F4F6"/>
-                                <SolidColorBrush x:Key="ButtonForeground" Color="#256D85"/>
-                                <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="#256D85"/>
+                                <SolidColorBrush x:Key="ButtonForeground" Color="{ThemeResource PrimaryColor}"/>
+                                <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="{ThemeResource PrimaryColor}"/>
                                 <SolidColorBrush x:Key="ButtonForegroundPressed" Color="#1F5B70"/>
-                                <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="#9CA3AF"/>
-                                <SolidColorBrush x:Key="ButtonBorderBrush" Color="#BFE8EC"/>
-                                <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="#A8DDE3"/>
+                                <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="{ThemeResource SecondaryTextColor}"/>
+                                <SolidColorBrush x:Key="ButtonBorderBrush" Color="{ThemeResource PrimaryBorderColor}"/>
+                                <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="{ThemeResource PrimaryBorderColor}"/>
                                 <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="#8FD2DA"/>
-                                <SolidColorBrush x:Key="ButtonBorderBrushDisabled" Color="#E5E7EB"/>
+                                <SolidColorBrush x:Key="ButtonBorderBrushDisabled" Color="{ThemeResource CardBackgroundColor}"/>
                             </Button.Resources>
                         </Button>
 
                         <Button x:Name="SaveButton"
                                 Content="Save Changes"
                                 Click="SaveButton_Click"
-                                Background="#2CC7CF"
+                                Background="{ThemeResource PrimaryVariantBrush}"
                                 Foreground="White"
                                 BorderThickness="0"
                                 CornerRadius="8"
                                 Padding="18,10">
                             <Button.Resources>
-                                <SolidColorBrush x:Key="ButtonBackground" Color="#2CC7CF"/>
+                                <SolidColorBrush x:Key="ButtonBackground" Color="{ThemeResource PrimaryVariantColor}"/>
                                 <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#25B8C0"/>
                                 <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#1FA7AF"/>
-                                <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="#A8DDE3"/>
+                                <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="{ThemeResource PrimaryBorderColor}"/>
                                 <SolidColorBrush x:Key="ButtonForeground" Color="White"/>
                                 <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="White"/>
                                 <SolidColorBrush x:Key="ButtonForegroundPressed" Color="White"/>
-                                <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="#E5E7EB"/>
-                                <SolidColorBrush x:Key="ButtonBorderBrush" Color="#2CC7CF"/>
+                                <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="{ThemeResource CardBackgroundColor}"/>
+                                <SolidColorBrush x:Key="ButtonBorderBrush" Color="{ThemeResource PrimaryVariantColor}"/>
                                 <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="#25B8C0"/>
                                 <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="#1FA7AF"/>
-                                <SolidColorBrush x:Key="ButtonBorderBrushDisabled" Color="#A8DDE3"/>
+                                <SolidColorBrush x:Key="ButtonBorderBrushDisabled" Color="{ThemeResource PrimaryBorderColor}"/>
                             </Button.Resources>
                         </Button>
 

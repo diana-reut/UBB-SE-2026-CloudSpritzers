@@ -19,7 +19,7 @@
                 <StackPanel Spacing="50">
 
                     <Grid Height="500">
-                        <FlipView x:Name="SupportCarousel" Background="#F5FDFD"
+                        <FlipView x:Name="SupportCarousel" Background="{ThemeResource CardBackgroundBrush}"
                           IsHitTestVisible="False"
                           UseTouchAnimationsForAllNavigation="False">
                             <FlipViewItem>
@@ -49,8 +49,8 @@
                     </Grid>
 
                     <StackPanel Spacing="30" Margin="40,0,40,60">
-                        <TextBlock Text="What Our Customers Say" FontSize="36" FontWeight="Bold" Foreground="#333333" HorizontalAlignment="Center"/>
-                        <Rectangle Height="3" Width="50" Fill="#2bb8c0" HorizontalAlignment="Center" Margin="0,-15,0,10"/>
+                        <TextBlock Text="What Our Customers Say" FontSize="36" FontWeight="Bold" Foreground="{ThemeResource PrimaryTextBrush}" HorizontalAlignment="Center"/>
+                        <Rectangle Height="3" Width="50" Fill="{ThemeResource PrimaryVariantBrush}" HorizontalAlignment="Center" Margin="0,-15,0,10"/>
 
                         <ItemsControl ItemsSource="{x:Bind ViewModel.Reviews}">
                             <ItemsControl.ItemsPanel>
@@ -63,21 +63,21 @@
                                 <DataTemplate x:DataType="dto:ReviewDTO">
                                     <Border Background="White" 
                                     Margin="12" Padding="25" CornerRadius="8" 
-                                    BorderThickness="1" BorderBrush="#E0E0E0">
+                                    BorderThickness="1" BorderBrush="{ThemeResource CardBackgroundBrush}">
                                         <StackPanel Spacing="15">
 
                                             <Viewbox Height="20" HorizontalAlignment="Left">
                                                 <RatingControl Value="{x:Bind overallRating}" 
                                                        IsReadOnly="True" 
                                                        MaxRating="5" 
-                                                       Foreground="#2bb8c0"/>
+                                                       Foreground="{ThemeResource PrimaryVariantBrush}"/>
                                             </Viewbox>
 
                                             <TextBlock Text="{x:Bind message}" 
                                                TextWrapping="Wrap" 
                                                FontSize="16" 
                                                LineHeight="24"
-                                               Foreground="#444444" 
+                                               Foreground="{ThemeResource PrimaryTextBrush}" 
                                                FontStyle="Italic"
                                                MinHeight="70"/>
 
@@ -85,7 +85,7 @@
                                                 <TextBlock Text="{x:Bind userName}" 
                                                    FontWeight="Bold" 
                                                    FontSize="16" 
-                                                   Foreground="#2bb8c0"/>
+                                                   Foreground="{ThemeResource PrimaryVariantBrush}"/>
                                                 <TextBlock Text="Verified Traveler" 
                                                    FontSize="12" 
                                                    Foreground="Gray"/>

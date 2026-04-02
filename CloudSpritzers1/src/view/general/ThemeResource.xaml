@@ -5,52 +5,99 @@
     xmlns:local="using:CloudSpritzers1.src.view.general">
 
     <!-- ========================= -->
-    <!-- COLORS -->
+    <!-- COLORS                    -->
     <!-- ========================= -->
+
+    <!-- Primary palette -->
     <Color x:Key="PrimaryColor">#2CB1A6</Color>
+    <Color x:Key="PrimaryVariantColor">#2BB8C0</Color>
     <Color x:Key="CardBackgroundColor">#FFFFFFFF</Color>
+
+    <!-- Text -->
     <Color x:Key="PrimaryTextColor">#202020</Color>
     <Color x:Key="SecondaryTextColor">#6B7280</Color>
+    <Color x:Key="DeepTextColor">#0F172A</Color>
+    <Color x:Key="NavyColor">#001B3D</Color>
+
+    <!-- Accent light background (review assistance banner) -->
+    <Color x:Key="AccentLightBackgroundColor">#ECFEFF</Color>
+
+    <!-- Borders -->
+    <Color x:Key="PrimaryBorderColor">#A8DDE3</Color>
+
+    <!-- Semantic / status -->
+    <Color x:Key="SuccessColor">#22C55E</Color>
+    <Color x:Key="ErrorColor">#B42318</Color>
+    <Color x:Key="WarningColor">#FFB347</Color>
+    <Color x:Key="InfoColor">#5CA0FF</Color>
+
+    <!-- Badge pairs -->
+    <Color x:Key="InfoBadgeBackgroundColor">#DBEAFE</Color>
+    <Color x:Key="InfoBadgeForegroundColor">#383CB8</Color>
+    <Color x:Key="ErrorBadgeBackgroundColor">#FFE2E2</Color>
+
+    <!-- Ticket status legend backgrounds -->
+    <Color x:Key="StatusOpenBackgroundColor">#FFF4E5</Color>
+    <Color x:Key="StatusInProgressBackgroundColor">#E5F0FF</Color>
+    <Color x:Key="StatusResolvedBackgroundColor">#E6FFED</Color>
 
     <!-- ========================= -->
-    <!-- BRUSHES -->
-    <!-- ========================= -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
-    <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackgroundColor}"/>
-    <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryTextColor}"/>
-
-    <!-- ========================= -->
-    <!-- STYLES -->
+    <!-- BRUSHES                   -->
     <!-- ========================= -->
 
-    <!-- Card Style -->
+    <!-- Primary -->
+    <SolidColorBrush x:Key="PrimaryBrush"           Color="{StaticResource PrimaryColor}"/>
+    <SolidColorBrush x:Key="PrimaryVariantBrush"    Color="{StaticResource PrimaryVariantColor}"/>
+    <SolidColorBrush x:Key="CardBackgroundBrush"    Color="{StaticResource CardBackgroundColor}"/>
+
+    <!-- Text -->
+    <SolidColorBrush x:Key="PrimaryTextBrush"       Color="{StaticResource PrimaryTextColor}"/>
+    <SolidColorBrush x:Key="SecondaryTextBrush"     Color="{StaticResource SecondaryTextColor}"/>
+    <SolidColorBrush x:Key="DeepTextBrush"          Color="{StaticResource DeepTextColor}"/>
+    <SolidColorBrush x:Key="NavyBrush"              Color="{StaticResource NavyColor}"/>
+
+    <!-- Borders -->
+    <SolidColorBrush x:Key="PrimaryBorderBrush"     Color="{StaticResource PrimaryBorderColor}"/>
+
+    <!-- Semantic -->
+    <SolidColorBrush x:Key="SuccessBrush"           Color="{StaticResource SuccessColor}"/>
+    <SolidColorBrush x:Key="ErrorBrush"             Color="{StaticResource ErrorColor}"/>
+    <SolidColorBrush x:Key="WarningBrush"           Color="{StaticResource WarningColor}"/>
+    <SolidColorBrush x:Key="InfoBrush"              Color="{StaticResource InfoColor}"/>
+
+    <!-- ========================= -->
+    <!-- STYLES                    -->
+    <!-- ========================= -->
+
+    <!-- Card -->
     <Style x:Key="CardStyle" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-        <Setter Property="CornerRadius" Value="12"/>
-        <Setter Property="Padding" Value="24"/>
+        <Setter Property="Background"     Value="{StaticResource CardBackgroundBrush}"/>
+        <Setter Property="CornerRadius"   Value="12"/>
+        <Setter Property="Padding"        Value="24"/>
     </Style>
 
     <!-- Title Text -->
     <Style x:Key="TitleTextStyle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize"            Value="20"/>
+        <Setter Property="FontWeight"          Value="SemiBold"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
 
     <!-- Subtitle Text -->
     <Style x:Key="SubtitleTextStyle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="12"/>
-        <Setter Property="Foreground" Value="{StaticResource SecondaryTextBrush}"/>
+        <Setter Property="FontSize"            Value="12"/>
+        <Setter Property="Foreground"          Value="{StaticResource SecondaryTextBrush}"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="TextAlignment" Value="Center"/>
-        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="TextAlignment"       Value="Center"/>
+        <Setter Property="TextWrapping"        Value="Wrap"/>
     </Style>
 
     <!-- Primary Button -->
     <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-        <Setter Property="Height" Value="40"/>
-        <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Height"          Value="40"/>
+        <Setter Property="Background"      Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="Foreground"      Value="White"/>
+        <Setter Property="CornerRadius"    Value="6"/>
     </Style>
+
 </ResourceDictionary>

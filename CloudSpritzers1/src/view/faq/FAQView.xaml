@@ -24,8 +24,8 @@
         <local:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
 
         <Style x:Key="CategoryButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#EAEAEE"/>
-            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="Background" Value="{ThemeResource CardBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{ThemeResource PrimaryTextBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Padding" Value="16,10"/>
@@ -34,12 +34,12 @@
         </Style>
 
         <Style x:Key="SelectedCategoryButtonStyle" TargetType="Button" BasedOn="{StaticResource CategoryButtonStyle}">
-            <Setter Property="Background" Value="#2CC7CF"/>
+            <Setter Property="Background" Value="{ThemeResource PrimaryVariantBrush}"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
 
         <Style x:Key="PopularQuestionButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#49C9D0"/>
+            <Setter Property="Background" Value="{ThemeResource PrimaryVariantBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="CornerRadius" Value="8"/>
@@ -70,21 +70,21 @@
                     <Border MaxWidth="1050"
                     HorizontalAlignment="Center"
                     Background="White"
-                    BorderBrush="#D8DDE3"
+                    BorderBrush="{ThemeResource CardBackgroundBrush}"
                     BorderThickness="1"
                     CornerRadius="4">
 
                         <StackPanel Spacing="16">
                             <StackPanel HorizontalAlignment="Center" Spacing="4" Margin="0,8,0,0">
-                                <TextBlock Text="Frequently Asked Questions" FontSize="22" FontWeight="SemiBold" Foreground="#1F2937" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Find quick answers to common questions" FontSize="12" Foreground="#6B7280" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Frequently Asked Questions" FontSize="22" FontWeight="SemiBold" Foreground="{ThemeResource DeepTextBrush}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Find quick answers to common questions" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}" HorizontalAlignment="Center"/>
                             </StackPanel>
 
                             <Border Margin="8,0,8,0" CornerRadius="6" Padding="14">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                        <GradientStop Color="#2CC7CF" Offset="0"/>
-                                        <GradientStop Color="#2AA9C9" Offset="1"/>
+                                        <GradientStop Color="{ThemeResource PrimaryVariantColor}" Offset="0"/>
+                                        <GradientStop Color="{ThemeResource PrimaryVariantColor}" Offset="1"/>
                                     </LinearGradientBrush>
                                 </Border.Background>
                                 <StackPanel Spacing="12">
@@ -104,7 +104,7 @@
                                                             <ColumnDefinition Width="Auto" />
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Text="{Binding Question}" TextWrapping="WrapWholeWords" TextTrimming="CharacterEllipsis" MaxLines="2" FontSize="17" FontWeight="SemiBold" Foreground="White"/>
-                                                        <Border Grid.Column="1" Background="#78DDE1" CornerRadius="10" Padding="8,4" VerticalAlignment="Top">
+                                                        <Border Grid.Column="1" Background="{ThemeResource PrimaryVariantBrush}" CornerRadius="10" Padding="8,4" VerticalAlignment="Top">
                                                             <StackPanel Orientation="Horizontal" Spacing="4">
                                                                 <FontIcon Glyph="&#xE8A7;" FontSize="11" Foreground="White"/>
                                                                 <TextBlock Text="{Binding ViewCount}" FontSize="11" FontWeight="SemiBold" Foreground="White"/>
@@ -118,7 +118,7 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="#F8F8FA" BorderBrush="#E5E7EB" BorderThickness="0,1,0,1" Padding="10">
+                            <Border Background="{ThemeResource CardBackgroundBrush}" BorderBrush="{ThemeResource CardBackgroundBrush}" BorderThickness="0,1,0,1" Padding="10">
                                 <StackPanel Spacing="10">
                                     <ScrollViewer HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollBarVisibility="Disabled">
                                         <StackPanel Orientation="Horizontal">
@@ -136,13 +136,13 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border Margin="8,0,8,8" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="14">
+                            <Border Margin="8,0,8,8" Background="White" BorderBrush="{ThemeResource CardBackgroundBrush}" BorderThickness="1" CornerRadius="8" Padding="14">
                                 <StackPanel Spacing="12">
-                                    <TextBlock Text="All Questions" FontSize="16" FontWeight="SemiBold" Foreground="#111827"/>
+                                    <TextBlock Text="All Questions" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource DeepTextBrush}"/>
                                     <ItemsControl ItemsSource="{Binding FilteredFAQs}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="dto:FAQEntryDTO">
-                                                <Border Margin="0,0,0,12" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="14">
+                                                <Border Margin="0,0,0,12" Background="White" BorderBrush="{ThemeResource CardBackgroundBrush}" BorderThickness="1" CornerRadius="8" Padding="14">
                                                     <StackPanel Spacing="10">
                                                         <Button Click="AccordionHeader_Click" Style="{StaticResource FaqAccordionHeaderButtonStyle}">
                                                             <Grid>
@@ -151,32 +151,32 @@
                                                                     <ColumnDefinition Width="Auto"/>
                                                                 </Grid.ColumnDefinitions>
                                                                 <StackPanel Spacing="6">
-                                                                    <TextBlock Text="{Binding Question}" FontSize="16" FontWeight="SemiBold" Foreground="#111827" TextWrapping="Wrap"/>
+                                                                    <TextBlock Text="{Binding Question}" FontSize="16" FontWeight="SemiBold" Foreground="{ThemeResource DeepTextBrush}" TextWrapping="Wrap"/>
                                                                     <StackPanel Orientation="Horizontal" Spacing="10">
-                                                                        <TextBlock Text="{Binding Category}" FontSize="11" Foreground="#2AA9C9"/>
+                                                                        <TextBlock Text="{Binding Category}" FontSize="11" Foreground="{ThemeResource PrimaryVariantBrush}"/>
                                                                         <StackPanel Orientation="Horizontal" Spacing="4">
-                                                                            <FontIcon Glyph="&#xE8A7;" FontSize="11" Foreground="#6B7280"/>
-                                                                            <TextBlock Text="{Binding ViewCount}" FontSize="11" Foreground="#6B7280"/>
+                                                                            <FontIcon Glyph="&#xE8A7;" FontSize="11" Foreground="{ThemeResource SecondaryTextBrush}"/>
+                                                                            <TextBlock Text="{Binding ViewCount}" FontSize="11" Foreground="{ThemeResource SecondaryTextBrush}"/>
                                                                         </StackPanel>
                                                                     </StackPanel>
                                                                 </StackPanel>
-                                                                <FontIcon Grid.Column="1" Glyph="{Binding IsExpanded, Converter={StaticResource BooleanToGlyphConverter}}" Foreground="#6B7280" VerticalAlignment="Center"/>
+                                                                <FontIcon Grid.Column="1" Glyph="{Binding IsExpanded, Converter={StaticResource BooleanToGlyphConverter}}" Foreground="{ThemeResource SecondaryTextBrush}" VerticalAlignment="Center"/>
                                                             </Grid>
                                                         </Button>
 
                                                         <StackPanel Visibility="{Binding IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}}" Spacing="12">
-                                                            <TextBlock Text="{Binding Answer}" TextWrapping="Wrap" FontSize="13" Foreground="#374151" LineHeight="22"/>
+                                                            <TextBlock Text="{Binding Answer}" TextWrapping="Wrap" FontSize="13" Foreground="{ThemeResource PrimaryTextBrush}" LineHeight="22"/>
 
                                                             <StackPanel Spacing="8" Visibility="{Binding DataContext.IsAdmin, ElementName=RootPage, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                                 <TextBlock Text="Feedback summary" FontSize="12" FontWeight="SemiBold"/>
                                                                 <StackPanel Orientation="Horizontal" Spacing="16">
-                                                                    <TextBlock Text="{Binding WasHelpfulVotes, ConverterParameter='Helpful: \{0\}'}" Foreground="#15803D" FontSize="12"/>
-                                                                    <TextBlock Text="{Binding WasNotHelpfulVotes, ConverterParameter='Not helpful: \{0\}'}" Foreground="#B42318" FontSize="12"/>
+                                                                    <TextBlock Text="{Binding WasHelpfulVotes, ConverterParameter='Helpful: \{0\}'}" Foreground="{ThemeResource SuccessBrush}" FontSize="12"/>
+                                                                    <TextBlock Text="{Binding WasNotHelpfulVotes, ConverterParameter='Not helpful: \{0\}'}" Foreground="{ThemeResource ErrorBrush}" FontSize="12"/>
                                                                 </StackPanel>
                                                             </StackPanel>
 
                                                             <StackPanel Spacing="12" Visibility="{Binding DataContext.IsAdmin, ElementName=RootPage, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-                                                                <TextBlock Text="Was this answer helpful?" FontSize="12" Foreground="#4B5563"/>
+                                                                <TextBlock Text="Was this answer helpful?" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}"/>
                                                                 <StackPanel Orientation="Horizontal" Spacing="10">
                                                                     <Button Click="HelpfulButton_Click" Tag="{Binding}" Background="{Binding IsHelpfulSelected, Converter={StaticResource HelpfulBackgroundConverter}}" CornerRadius="8">
                                                                         <StackPanel Orientation="Horizontal" Spacing="6">
