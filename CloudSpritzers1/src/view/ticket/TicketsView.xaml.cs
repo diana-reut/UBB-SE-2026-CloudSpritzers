@@ -140,18 +140,18 @@ namespace CloudSpritzers1.src.view.ticket
             stackPanel.Children.Add(descriptionBox);
 
             // Email
-            stackPanel.Children.Add(new TextBlock { Text = "Email Address*", FontSize = 16, Foreground = new SolidColorBrush(Colors.Black) });
-            emailBox = new TextBox
-            {
-                PlaceholderText = "your.email@example.com",
-                Width = 400,
-                Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 243, 243, 245)),
-                Foreground = new SolidColorBrush(Colors.Black),
-                Padding = new Thickness(8),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                PlaceholderForeground = new SolidColorBrush(Colors.DarkGray)
-            };
-            stackPanel.Children.Add(emailBox);
+            //stackPanel.Children.Add(new TextBlock { Text = "Email Address*", FontSize = 16, Foreground = new SolidColorBrush(Colors.Black) });
+            //emailBox = new TextBox
+            //{
+            //    PlaceholderText = "your.email@example.com",
+            //    Width = 400,
+            //    Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 243, 243, 245)),
+            //    Foreground = new SolidColorBrush(Colors.Black),
+            //    Padding = new Thickness(8),
+            //    HorizontalAlignment = HorizontalAlignment.Left,
+            //    PlaceholderForeground = new SolidColorBrush(Colors.DarkGray)
+            //};
+            //stackPanel.Children.Add(emailBox);
 
             // Buttons
             var buttonPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Left, Spacing = 12, Margin = new Thickness(0, 12, 0, 0) };
@@ -161,7 +161,7 @@ namespace CloudSpritzers1.src.view.ticket
             {
                 try
                 {
-                    if (string.IsNullOrWhiteSpace(titleBox.Text) || string.IsNullOrWhiteSpace(descriptionBox.Text) || string.IsNullOrWhiteSpace(emailBox.Text))
+                    if (string.IsNullOrWhiteSpace(titleBox.Text) || string.IsNullOrWhiteSpace(descriptionBox.Text))
                         throw new Exception("Please fill all required fields.");
 
                     // Map Category and Subcategory IDs
@@ -175,7 +175,7 @@ namespace CloudSpritzers1.src.view.ticket
                     var newTicket = new TicketDTO(
                         TicketId: ViewModel.NrTickets() + 1,
                         UserId: 1,
-                        UserEmail: emailBox.Text,
+                        UserEmail: "your.email@example.com",
                         UrgencyLevel: UrgencyLevelEnum.LOW,
                         Status: StatusEnum.OPEN,
                         CategoryId: categoryId,
