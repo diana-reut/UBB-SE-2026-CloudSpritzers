@@ -1,68 +1,77 @@
-﻿using CloudSpritzers1.src.model.employee;
-using CloudSpritzers1.src.repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CloudSpritzers1.Src.Model.Employee;
+using CloudSpritzers1.Src.Repository;
+using CloudSpritzers1.Src.Repository.Interfaces;
+using CloudSpritzers1.Src.Service.Interfaces;
 
-namespace CloudSpritzers1.src.service
+namespace CloudSpritzers1.Src.Service
 {
-    public class EmployeeService
+    public class EmployeeService : IEmployeeService
     {
-        private readonly EmployeeRepository _employeeRepository;
+        private readonly IEmployeeRepository employeeRepository;
 
-        public EmployeeService(EmployeeRepository employeeRepo)
+        public EmployeeService(IEmployeeRepository employeeRepository)
         {
-            _employeeRepository = employeeRepo;
+            this.employeeRepository = employeeRepository;
         }
 
-        public Employee GetById(int id)
+        public Employee GetEmployeeById(int identificationNumber)
         {
-            return _employeeRepository.GetById(id);
+            return employeeRepository.GetById(identificationNumber);
         }
 
-        public int Add(Employee employee)
+        public int AddEmployee(Employee employeeEntity)
         {
-            return _employeeRepository.Add(employee);
+            return employeeRepository.CreateNewEntity(employeeEntity);
         }
 
-        public void UpdateById(int id, Employee employee)
+        public void UpdateEmployeeById(int identificationNumber, Employee employeeEntity)
         {
-            _employeeRepository.UpdateById(id, employee);
+            employeeRepository.UpdateById(identificationNumber, employeeEntity);
         }
 
-        public void DeleteById(int id)
+        public void DeleteEmployeeById(int identificationNumber)
         {
-            _employeeRepository.DeleteById(id);
+            employeeRepository.DeleteById(identificationNumber);
         }
 
-        public List<Employee> GetAll()
+        public List<Employee> GetAllEmployees()
         {
-            return _employeeRepository.GetAll().ToList();
+            return employeeRepository.GetAll().ToList();
         }
 
-        public void CreateEmployee(int id, string name, string email, string group)
+        public void CreateNewEmployee(int identificationNumber, string fullName, string emailAddress, string departmentName)
         {
-            GroupEnum groupEnum = (GroupEnum)Enum.Parse(typeof(GroupEnum), group);
-            Employee employee = new Employee(id, name, email, groupEnum);
-            ValidateEmployee(employee);
-            Add(employee);
+            EmployeeDepartment departmentEnum = (EmployeeDepartment)Enum.Parse(typeof(EmployeeDepartment), departmentName);
+            Employee newEmployee = new Employee(identificationNumber, fullName, emailAddress, departmentEnum);
+            ValidateEmployeeIntegrity(newEmployee);
+            AddEmployee(newEmployee);
         }
 
-        public void ValidateEmployee(Employee employee)
+        public void ValidateEmployeeIntegrity(Employee employeeEntity)
         {
-            ArgumentNullException.ThrowIfNull(employee);
-            if (this.GetAll().Contains(employee))
+            ArgumentNullException.ThrowIfNull(employeeEntity);
+
+            if (this.GetAllEmployees().Contains(employeeEntity))
+            {
                 throw new ArgumentException("Employee already exists");
-            if (string.IsNullOrEmpty(employee.GetName()))
+            }
+            if (string.IsNullOrEmpty(employeeEntity.RetrieveConfiguredDisplayFullNameForBot()))
+            {
                 throw new ArgumentException("Name cannot be null or empty");
-            if (string.IsNullOrEmpty(employee.GetEmail()))
+            }
+            if (string.IsNullOrEmpty(employeeEntity.RetrieveConfiguredEmailAddressForBotContact()))
+            {
                 throw new ArgumentException("Email cannot be null or empty");
-            if(string.IsNullOrEmpty(employee.GetGroup()))
-                throw new ArgumentException("Group cannot be null or empty");
-            if (!Enum.IsDefined(typeof(GroupEnum), employee.GetGroup()))
+            }
+            if (!Enum.IsDefined(typeof(EmployeeDepartment), employeeEntity.GetDepartmentName()))
+            {
                 throw new ArgumentException("Invalid group");
+            }
         }
     }
 }

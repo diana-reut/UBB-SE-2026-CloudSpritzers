@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 
-namespace CloudSpritzers1.src.converter
+namespace CloudSpritzers1.Src.Converter
 {
     public class BooleanToAlignmentConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value is bool isCurrentUser && isCurrentUser)
+            {
                 return HorizontalAlignment.Right;
+            }
 
             return HorizontalAlignment.Left;
         }

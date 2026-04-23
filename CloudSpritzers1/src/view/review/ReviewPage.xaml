@@ -1,7 +1,7 @@
 <Page
-    x:Class="CloudSpritzers1.src.view.review.ReviewPage"
+    x:Class="CloudSpritzers1.Src.View.Review.ReviewPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:general="using:CloudSpritzers1.src.view.general"
+    xmlns:general="using:CloudSpritzers1.Src.View.General"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Background="{ThemeResource PageBackgroundBrush}">
 
@@ -154,7 +154,7 @@
                             </StackPanel>
 
                             <Button Grid.Column="2"
-                            Click="OnClick"
+                            Click="NavigateToTicketsView_Click"
                             Content="Get help"
                             Background="{ThemeResource PrimaryBrush}"
                             Foreground="White"

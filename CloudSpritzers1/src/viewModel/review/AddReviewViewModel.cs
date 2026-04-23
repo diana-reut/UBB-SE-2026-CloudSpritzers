@@ -1,51 +1,51 @@
-﻿using CloudSpritzers1.src.model;
-using CloudSpritzers1.src.service;
+﻿using System;
+using System.Diagnostics;
+using CloudSpritzers1.Src.Model;
+using CloudSpritzers1.Src.Service;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Diagnostics;
 
-namespace CloudSpritzers1.src.viewModel.review
+namespace CloudSpritzers1.Src.ViewModel.Review
 {
     public partial class AddReviewViewModel : ObservableObject
     {
-        private readonly ReviewService _reviewService;
+        private readonly ReviewService reviewService;
 
         public event EventHandler<(string Title, string Message)>? AlertRequested;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(SubmitReviewCommand))]
         [NotifyPropertyChangedFor(nameof(DutyText))]
-        private int _dutyRating;
+        private int dutyRating;
         public string DutyText => DutyRating > 0 ? $"{DutyRating}/5" : "Not rated";
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(SubmitReviewCommand))]
         [NotifyPropertyChangedFor(nameof(FlightText))]
-        private int _flightRating;
+        private int flightRating;
         public string FlightText => FlightRating > 0 ? $"{FlightRating}/5" : "Not rated";
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(SubmitReviewCommand))]
         [NotifyPropertyChangedFor(nameof(StaffText))]
-        private int _staffRating;
+        private int staffRating;
         public string StaffText => StaffRating > 0 ? $"{StaffRating}/5" : "Not rated";
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(SubmitReviewCommand))]
         [NotifyPropertyChangedFor(nameof(CleanText))]
-        private int _cleanRating;
+        private int cleanRating;
         public string CleanText => CleanRating > 0 ? $"{CleanRating}/5" : "Not rated";
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(SubmitReviewCommand))]
         [NotifyPropertyChangedFor(nameof(CharCountText))]
-        private string _reviewMessage = string.Empty;
+        private string reviewMessage = string.Empty;
         public string CharCountText => $"{ReviewMessage?.Length ?? 0} characters";
 
         public AddReviewViewModel(ReviewService reviewService)
         {
-            _reviewService = reviewService;
+            this.reviewService = reviewService;
         }
 
         private bool CanSubmitReview()
@@ -62,9 +62,8 @@ namespace CloudSpritzers1.src.viewModel.review
         {
             try
             {
-
                 var app = App.Current as App;
-                User? currentUser = app?.User; 
+                User? currentUser = app?.User;
 
                 if (currentUser == null)
                 {
@@ -72,9 +71,8 @@ namespace CloudSpritzers1.src.viewModel.review
                     return;
                 }
 
-                _reviewService.CreateReview(1, currentUser, ReviewMessage, DutyRating, FlightRating, StaffRating, CleanRating);
-            
-             
+                reviewService.CreateReview(1, currentUser, ReviewMessage, DutyRating, FlightRating, StaffRating, CleanRating);
+
                 DutyRating = 0;
                 FlightRating = 0;
                 StaffRating = 0;

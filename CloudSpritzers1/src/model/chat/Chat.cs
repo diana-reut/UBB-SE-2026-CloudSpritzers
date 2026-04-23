@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using CloudSpritzers1.src.model.message;
-using CloudSpritzers1.src.model.chat;
-
-namespace CloudSpritzers1.src.model.chat
+using CloudSpritzers1.Src.Model.Message;
+namespace CloudSpritzers1.Src.Model.Chats
 {
     public class Chat
     {
@@ -25,7 +23,9 @@ namespace CloudSpritzers1.src.model.chat
         public void AddMessage(IMessage message)
         {
             if (message == null)
+            {
                 throw new ArgumentNullException(nameof(message), "message is empty");
+            }
             Messages.Add(message);
         }
 
@@ -38,6 +38,5 @@ namespace CloudSpritzers1.src.model.chat
         {
             Status = ChatStatus.Closed;
         }
-
     }
 }

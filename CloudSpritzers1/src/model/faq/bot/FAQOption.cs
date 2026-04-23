@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CloudSpritzers1.src.model.faq.bot
+namespace CloudSpritzers1.Src.Model.Faq.Bot
 {
-    public record FAQOption(string Label, int NextOptionId);
+    public record FAQOption(string label, int nextOptionId);
 }

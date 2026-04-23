@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using CloudSpritzers1.src.model.faq;
+using CloudSpritzers1.Src.Model.Faq;
 
-namespace CloudSpritzers1.src.dto
+namespace CloudSpritzers1.Src.Dto
 {
     public class FAQEntryDTO : INotifyPropertyChanged
     {
@@ -11,18 +11,18 @@ namespace CloudSpritzers1.src.dto
         public string Answer { get; set; }
         public FAQCategoryEnum Category { get; set; }
         public int ViewCount { get; set; }
-        public int WasHelpfulVotes { get; set; }
-        public int WasNotHelpfulVotes { get; set; }
+        public int HelpfulVotesCount { get; set; }
+        public int NotHelpfulVotesCount { get; set; }
 
-        private bool _isExpanded;
+        private bool isExpanded;
         public bool IsExpanded
         {
-            get => _isExpanded;
+            get => isExpanded;
             set
             {
-                if (_isExpanded != value)
+                if (isExpanded != value)
                 {
-                    _isExpanded = value;
+                    isExpanded = value;
                     OnPropertyChanged();
                 }
             }
@@ -42,8 +42,8 @@ namespace CloudSpritzers1.src.dto
             Answer = answer;
             Category = category;
             ViewCount = viewCount;
-            WasHelpfulVotes = wasHelpfulVotes;
-            WasNotHelpfulVotes = wasNotHelpfulVotes;
+            HelpfulVotesCount = wasHelpfulVotes;
+            NotHelpfulVotesCount = wasNotHelpfulVotes;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -53,43 +53,43 @@ namespace CloudSpritzers1.src.dto
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private bool _hasFeedback;
+        private bool hasFeedback;
         public bool HasFeedback
         {
-            get => _hasFeedback;
+            get => hasFeedback;
             set
             {
-                if (_hasFeedback != value)
+                if (hasFeedback != value)
                 {
-                    _hasFeedback = value;
+                    hasFeedback = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        private bool _isHelpfulSelected;
+        private bool isHelpfulSelected;
         public bool IsHelpfulSelected
         {
-            get => _isHelpfulSelected;
+            get => isHelpfulSelected;
             set
             {
-                if (_isHelpfulSelected != value)
+                if (isHelpfulSelected != value)
                 {
-                    _isHelpfulSelected = value;
+                    isHelpfulSelected = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        private bool _isNotHelpfulSelected;
+        private bool isNotHelpfulSelected;
         public bool IsNotHelpfulSelected
         {
-            get => _isNotHelpfulSelected;
+            get => isNotHelpfulSelected;
             set
             {
-                if (_isNotHelpfulSelected != value)
+                if (isNotHelpfulSelected != value)
                 {
-                    _isNotHelpfulSelected = value;
+                    isNotHelpfulSelected = value;
                     OnPropertyChanged();
                 }
             }

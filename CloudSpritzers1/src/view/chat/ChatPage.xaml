@@ -1,14 +1,14 @@
 <Page
-    x:Class="CloudSpritzers1.src.view.chat.ChatPage"
+    x:Class="CloudSpritzers1.Src.View.Chat.ChatPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:msg="using:CloudSpritzers1.src.model.message"
+    xmlns:msg="using:CloudSpritzers1.Src.Model.Message"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:view="using:CloudSpritzers1.src.view.message"
-    xmlns:dto="using:CloudSpritzers1.src.dto"
-    xmlns:local="using:CloudSpritzers1.src.view.chat"
-    xmlns:bot="using:CloudSpritzers1.src.model.faq.bot"
+    xmlns:view="using:CloudSpritzers1.Src.View.Message"
+    xmlns:dto="using:CloudSpritzers1.Src.Dto"
+    xmlns:local="using:CloudSpritzers1.Src.View.Chat"
+    xmlns:bot="using:CloudSpritzers1.Src.Model.Faq.Bot"
     x:Name="RootPage"
     mc:Ignorable="d"
     Background="{ThemeResource CardBackgroundBrush}">
@@ -155,7 +155,7 @@
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="bot:FAQOption">
-                            <Button Content="{x:Bind Label}" 
+                            <Button Content="{x:Bind label}" 
                     Margin="4"
                     HorizontalAlignment="Stretch" 
                     VerticalAlignment="Center"

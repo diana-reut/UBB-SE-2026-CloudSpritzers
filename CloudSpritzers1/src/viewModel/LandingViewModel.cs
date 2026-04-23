@@ -1,65 +1,46 @@
-﻿using AutoMapper;
-using CloudSpritzers1.src.dto;
-using CloudSpritzers1.src.repository.database;
-using CloudSpritzers1.src.service;
+﻿using System.Collections.ObjectModel;
+using AutoMapper;
+using CloudSpritzers1.Src.Dto;
+using CloudSpritzers1.Src.Service;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Data.SqlClient;
-using System.Collections.ObjectModel;
 
-namespace CloudSpritzers1.src.viewmodel
+namespace CloudSpritzers1.Src.ViewModel
 {
     public partial class LandingViewModel : ObservableObject
     {
-        private readonly ReviewService _reviewService;
-        private readonly IMapper _mapper;
+        private readonly ReviewService reviewService;
+        private readonly IMapper mapper;
 
-        public ObservableCollection<ReviewDTO> Reviews { get; } = new();
+        public ObservableCollection<ReviewDTO> Reviews { get; } = new ();
 
         public LandingViewModel(ReviewService reviewService, IMapper mapper)
         {
-            _reviewService = reviewService;
-            _mapper = mapper;
+            this.reviewService = reviewService;
+            this.mapper = mapper;
             LoadReviews();
         }
 
         public void LoadReviews()
         {
-            var reviewsFromDb = _reviewService.GetAll();
+            var allReviews = reviewService.GetAll();
             Reviews.Clear();
-    
-            foreach (var review in reviewsFromDb)
+
+            foreach (var review in allReviews)
             {
-                int idToSearch = review.GetUser().UserId;
-        
-                string realName = GetUserNameFromDatabase(idToSearch);
+                string realName = review.GetUser().RetrieveConfiguredDisplayFullNameForBot();
 
-                float average = (review.GetDutyFreeRating() +
-                         review.GetFlightExperienceRating() +
-                         review.GetStaffFriendlinessRating() +
-                         review.GetCleanlinessRating()) / 4.0f;
+                float averageRating = reviewService.CalculateAverageRating(review);
 
-                var dto = _mapper.Map<ReviewDTO>(review);
+                var reviewDto = mapper.Map<ReviewDTO>(review);
 
-                var finalDto = dto with
+                var finalDto = reviewDto with
                 {
                     userName = realName,
-                    overallRating = average
+                    overallRating = averageRating
                 };
 
                 Reviews.Add(finalDto);
             }
-        }
-
-        private string GetUserNameFromDatabase(int userId)
-        {
-            using var conn = DBConnectionHandler.Instance.Connection;
-            string query = "SELECT name FROM [User] WHERE user_id = @id";
-            SqlCommand cmd = new SqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@id", userId);
-
-            conn.Open();
-            var result = cmd.ExecuteScalar();
-            return result?.ToString() ?? "Unknown User";
         }
     }
 }

@@ -1,8 +1,8 @@
-using CloudSpritzers1.src.viewModel.review;
+using CloudSpritzers1.Src.ViewModel.Review;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 
-namespace CloudSpritzers1.src.view.review
+namespace CloudSpritzers1.Src.View.Review
 {
     public sealed partial class EmployeeSeeReviews : Page
     {

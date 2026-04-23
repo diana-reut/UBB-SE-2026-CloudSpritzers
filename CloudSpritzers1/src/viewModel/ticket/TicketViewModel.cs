@@ -1,52 +1,51 @@
-﻿using AutoMapper;
-using CloudSpritzers1.src.dto;
-using CloudSpritzers1.src.model;
-using CloudSpritzers1.src.model.ticket;
-using CloudSpritzers1.src.repository.database;
-using CloudSpritzers1.src.service;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using CloudSpritzers1.src.dto;
-using CloudSpritzers1.src.model.ticket;
-using CloudSpritzers1.src.service;
-using AutoMapper;
 using System.Collections.ObjectModel;
 using System.Linq;
+using AutoMapper;
+using CloudSpritzers1.Src.Dto;
+using CloudSpritzers1.Src.Model;
+using CloudSpritzers1.Src.Model.Ticket;
+using CloudSpritzers1.Src.Repository.Database;
+using CloudSpritzers1.Src.Service;
+using Microsoft.Data.SqlClient;
+using CloudSpritzers1.Src.Service.Interfaces;
+using CloudSpritzers1.Src.Dto;
+using CloudSpritzers1.Src.Model.Ticket;
+using CloudSpritzers1.Src.Service;
+using AutoMapper;
 
-namespace CloudSpritzers1.src.viewModel
+namespace CloudSpritzers1.Src.ViewModel
 {
     public class TicketsViewModel
     {
-        private readonly TicketService _ticketService;
-        private readonly IMapper _mapper;
+        private readonly ITicketService ticketService;
+        private readonly IMapper mapper;
+        private readonly ITicketCategoryService categoryService;
+        private readonly ITicketSubcategoryService subcategoryService;
+        private readonly IUserService userService;
 
-        public ObservableCollection<TicketDTO> AllTickets { get; } = new();
+        public ObservableCollection<TicketDTO> AllTickets { get; } = new ();
 
-        private ObservableCollection<TicketDTO> _ticketsRead = new();
-        public ObservableCollection<TicketDTO> TicketsRead => _ticketsRead;
+        private ObservableCollection<TicketDTO> filteredTicketsForDisplay = new ();
+        public ObservableCollection<TicketDTO> FilteredTicketsForDisplay => filteredTicketsForDisplay;
 
-        private TicketFilter _selectedFilter = TicketFilter.ALL;
+        private TicketFilterStatusEnum selectedFilter = TicketFilterStatusEnum.ALL;
 
-        private readonly TicketCategoryService _categoryService;
-        private readonly TicketSubcategoryService _subcategoryService;
-        private readonly UserService _userService;
-        public ObservableCollection<TicketCategory> Categories { get; } = new();
-        public ObservableCollection<TicketSubcategory> Subcategories { get; } = new();
+        public ObservableCollection<TicketCategory> Categories { get; } = new ();
+        public ObservableCollection<TicketSubcategory> Subcategories { get; } = new ();
 
-       
-        public TicketsViewModel(TicketService ticketService, TicketCategoryService categoryService, TicketSubcategoryService subcategoryService, UserService userService, IMapper mapper)
+        public TicketsViewModel(ITicketService ticketService, ITicketCategoryService categoryService, ITicketSubcategoryService subcategoryService, IUserService userService, IMapper mapper)
         {
-            _ticketService = ticketService;
-            _categoryService = categoryService;
-            _subcategoryService = subcategoryService;
-            _userService = userService;
-            _mapper = mapper;
+            this.ticketService = ticketService;
+            this.categoryService = categoryService;
+            this.subcategoryService = subcategoryService;
+            this.userService = userService;
+            this.mapper = mapper;
 
             LoadTickets();
             LoadCategories();
@@ -60,31 +59,33 @@ namespace CloudSpritzers1.src.viewModel
             return AllTickets;
         }
 
-        public int NrTickets()
+        public int GetTotalTicketCount()
         {
             return AllTickets.Count;
         }
 
-        public TicketFilter SelectedFilter
+        public TicketFilterStatusEnum SelectedFilterStatus
         {
-            get => _selectedFilter;
+            get => selectedFilter;
             set
             {
-                if (_selectedFilter != value)
+                if (selectedFilter != value)
                 {
-                    _selectedFilter = value;
-                    ApplyFilter();
+                    selectedFilter = value;
+                    ApplyFilterLogic();
                 }
             }
         }
 
         public string SelectedFilterString
         {
-            get => SelectedFilter.ToString();
+            get => SelectedFilterStatus.ToString();
             set
             {
-                if (Enum.TryParse<TicketFilter>(value, out var filter))
-                    SelectedFilter = filter;
+                if (Enum.TryParse<TicketFilterStatusEnum>(value, out var filter))
+                {
+                    SelectedFilterStatus = filter;
+                }
             }
         }
 
@@ -93,62 +94,51 @@ namespace CloudSpritzers1.src.viewModel
         // =================================
         private void LoadTickets()
         {
-            var ticketsFromDb = _ticketService.GetAllTickets();
+            var ticketsFromDatabase = ticketService.GetAllTickets();
 
             AllTickets.Clear();
 
-            foreach (var ticket in ticketsFromDb)
+            foreach (var ticketEntity in ticketsFromDatabase)
             {
-                var dto = _mapper.Map<TicketDTO>(ticket);
-                AllTickets.Add(dto);
+                var ticketDTO = mapper.Map<TicketDTO>(ticketEntity);
+                AllTickets.Add(ticketDTO);
             }
 
-            ApplyFilter();
+            ApplyFilterLogic();
         }
 
         // =================================
         // FILTER
         // =================================
-        private void ApplyFilter()
+        private void ApplyFilterLogic()
         {
-            _ticketsRead.Clear();
+            filteredTicketsForDisplay.Clear();
 
-            IEnumerable<TicketDTO> filtered = AllTickets;
+            IEnumerable<TicketDTO> filteredResults = ticketService.FilterTicketsByStatus(
+                AllTickets,
+                SelectedFilterStatus);
 
-            switch (SelectedFilter)
+            foreach (var ticket in filteredResults)
             {
-                case TicketFilter.OPEN:
-                    filtered = AllTickets.Where(t => t.Status == StatusEnum.OPEN);
-                    break;
-
-                case TicketFilter.IN_PROGRESS:
-                    filtered = AllTickets.Where(t => t.Status == StatusEnum.IN_PROGRESS);
-                    break;
-
-                case TicketFilter.RESOLVED:
-                    filtered = AllTickets.Where(t => t.Status == StatusEnum.RESOLVED);
-                    break;
+                filteredTicketsForDisplay.Add(ticket);
             }
-
-            foreach (var t in filtered)
-                _ticketsRead.Add(t);
         }
 
         // =================================
         // UPDATE STATUS
         // =================================
-        public void UpdateStatus(int ticketId, StatusEnum status)
+        public void UpdateStatus(int ticketId, TicketStatusEnum newStatus)
         {
-            _ticketService.UpdateStatus(ticketId, status);
+            ticketService.UpdateStatus(ticketId, newStatus);
             LoadTickets();
         }
 
         // =================================
         // UPDATE URGENCY
         // =================================
-        public void UpdateUrgency(int ticketId, UrgencyLevelEnum urgency)
+        public void UpdateUrgencyLevel(int ticketId, TicketUrgencyLevelEnum newUrgencyLevel)
         {
-            _ticketService.UpdateUrgencyLevel(ticketId, urgency);
+            ticketService.UpdateUrgencyLevel(ticketId, newUrgencyLevel);
             LoadTickets();
         }
 
@@ -158,49 +148,45 @@ namespace CloudSpritzers1.src.viewModel
         public void CreateTicket(TicketDTO ticketDTO)
         {
             // Fetch related entities from DB
-            var user = _userService.GetById(ticketDTO.UserId);
-            var category = _categoryService.GetCategoryById(ticketDTO.CategoryId);
-            var subcategory = _subcategoryService.GetSubcategoryById(ticketDTO.SubcategoryId);
+            var creator = userService.GetById(ticketDTO.creatorAccountId);
+            var category = categoryService.GetCategoryById(ticketDTO.categoryId);
+            var subcategory = subcategoryService.GetSubcategoryById(ticketDTO.subcategoryId);
 
             var ticket = new Ticket(
-                ticketDTO.TicketId,
-                user,
-                ticketDTO.Status,
+                ticketDTO.ticketId,
+                creator,
+                ticketDTO.currentStatus,
                 category,
                 subcategory,
-                ticketDTO.Subject,
-                ticketDTO.Description,
-                ticketDTO.CreatedAt,
-                ticketDTO.UrgencyLevel
-            );
+                ticketDTO.subject,
+                ticketDTO.description,
+                ticketDTO.creationTimestamp,
+                ticketDTO.urgencyLevel);
 
-            _ticketService.AddTicket(ticket);
+            ticketService.AddTicket(ticket);
             LoadTickets();
         }
-        //public void CreateTicket(TicketDTO ticketDTO)
-        //{
-        //    var ticket = _mapper.Map<Ticket>(ticketDTO);
 
-        //    _ticketService.AddTicket(ticket);
-
-        //    LoadTickets();
-        //}
         private void LoadCategories()
         {
             Categories.Clear();
-            foreach (var cat in _categoryService.GetAllCategories())
-                Categories.Add(cat);
+            foreach (var categoryEntity in categoryService.GetAllCategories())
+            {
+                Categories.Add(categoryEntity);
+            }
         }
 
         public void LoadSubcategories(int categoryId)
         {
             Subcategories.Clear();
-            foreach (var sub in _subcategoryService.GetSubcategoriesByCategoryId(categoryId))
-                Subcategories.Add(sub);
+            foreach (var subcategoryEntity in subcategoryService.GetSubcategoriesByCategoryId(categoryId))
+            {
+                Subcategories.Add(subcategoryEntity);
+            }
         }
     }
 
-    public enum TicketFilter
+    public enum TicketFilterStatusEnum
     {
         ALL,
         OPEN,

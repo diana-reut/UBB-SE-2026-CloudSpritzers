@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 
-namespace CloudSpritzers1.src.converter
+namespace CloudSpritzers1.Src.Converter
 {
     public class BooleanToVisibilityConverter : IValueConverter
     {
@@ -16,6 +16,8 @@ namespace CloudSpritzers1.src.converter
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
-            => throw new NotImplementedException();
+        {
+            return value is Visibility v && v == Visibility.Visible;
+        }
     }
 }

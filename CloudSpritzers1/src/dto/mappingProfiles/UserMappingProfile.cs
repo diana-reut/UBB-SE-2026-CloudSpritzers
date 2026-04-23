@@ -1,20 +1,22 @@
-﻿using AutoMapper;
-using CloudSpritzers1.src.dto;
-using CloudSpritzers1.src.model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using CloudSpritzers1.Src.Dto;
+using CloudSpritzers1.Src.Model;
 
-namespace CloudSpritzers1.src.dto.mappingProfiles
+namespace CloudSpritzers1.Src.Dto.MappingProfiles
 {
     public class UserMappingProfile : Profile
     {
         public UserMappingProfile()
         {
-            System.Diagnostics.Debug.WriteLine("UserMappingProfile Loaded!");
-            CreateMap<User, UserDTO>();
+            CreateMap<User, UserDTO>()
+                .ConstructUsing(user => new UserDTO(
+                    user.RetrieveConfiguredDisplayFullNameForBot(),
+                    user.RetrieveConfiguredEmailAddressForBotContact())).ForAllMembers(opt => opt.Ignore());
         }
     }
 }

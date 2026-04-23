@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using CloudSpritzers1.src.dto;
-using CloudSpritzers1.src.model.ticket;
-using CloudSpritzers1.src.model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using CloudSpritzers1.Src.Dto;
+using CloudSpritzers1.Src.Model.Ticket;
+using CloudSpritzers1.Src.Model;
 
-namespace CloudSpritzers1.src.dto.mappingProfiles
+namespace CloudSpritzers1.Src.Dto.MappingProfiles
 {
     public class TicketMappingProfile : Profile
     {
@@ -17,18 +17,17 @@ namespace CloudSpritzers1.src.dto.mappingProfiles
             CreateMap<Ticket, TicketDTO>()
                 .ConstructUsing(ticket => new TicketDTO(
                     ticket.TicketId,
-                    ticket.User.UserId,
-                    ticket.User.GetEmail(),
+                    ticket.Creator.UserId,
+                    ticket.Creator.RetrieveConfiguredEmailAddressForBotContact(),
                     ticket.UrgencyLevel,
-                    ticket.Status,
+                    ticket.CurrentStatus,
                     ticket.Category.CategoryId,
-                    ticket.Category.Name,
+                    ticket.Category.CategoryName,
                     ticket.Subcategory.SubcategoryId,
                     ticket.Subcategory.SubcategoryName,
                     ticket.Subject,
                     ticket.Description,
-                    ticket.CreatedAt
-                    ));
+                    ticket.CreationTimestamp));
         }
     }
 }

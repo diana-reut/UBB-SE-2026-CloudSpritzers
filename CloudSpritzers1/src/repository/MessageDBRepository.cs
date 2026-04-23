@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
-using CloudSpritzers1.src.model.message;
-using CloudSpritzers1.src.model.chat;
+using CloudSpritzers1.Src.Model.Message;
+using CloudSpritzers1.Src.Model.Chats;
 
-namespace CloudSpritzers1.src.repository
+namespace CloudSpritzers1.Src.Repository.Database
 {
-    public class MessageDBRepository : DBRepository<int, Message>, IRepository<int, Message>
+    public class MessageDatabaseRepository : DatabaseRepository<int, Message>, IRepository<int, Message>
     {
         protected override Message MapRowToEntity(SqlDataReader reader)
         {
@@ -14,7 +14,7 @@ namespace CloudSpritzers1.src.repository
             int chatId = reader.GetInt32(reader.GetOrdinal("chat_id"));
             int senderId = reader.GetInt32(reader.GetOrdinal("sender_id"));
             string text = reader.GetString(reader.GetOrdinal("text"));
-            ///DateTimeOffset timestamp = reader.GetDateTimeOffset(reader.GetOrdinal("timestamp"));
+            /// DateTimeOffset timestamp = reader.GetDateTimeOffset(reader.GetOrdinal("timestamp"));
             // Read as DateTime, then convert to DateTimeOffset
             DateTime dbDt = reader.GetDateTime(reader.GetOrdinal("timestamp"));
             DateTimeOffset timestamp = new DateTimeOffset(dbDt);
@@ -27,7 +27,7 @@ namespace CloudSpritzers1.src.repository
 
         protected override int GetEntityId(Message entity) => entity.GetId();
 
-        public int Add(Message elem)
+        public int CreateNewEntity(Message elem)
         {
             const string query =
                 "INSERT INTO Message (sender_id, chat_id, timestamp, text, is_read) " +
@@ -35,7 +35,7 @@ namespace CloudSpritzers1.src.repository
                 "SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             var cmd = new SqlCommand(query);
-            cmd.Parameters.AddWithValue("@senderId", elem.GetSender().GetId());
+            cmd.Parameters.AddWithValue("@senderId", elem.GetSender().RetrieveUniqueDatabaseIdentifierForBot());
             cmd.Parameters.AddWithValue("@chatId", ((IMessage)elem).GetChat().ChatId);
             cmd.Parameters.AddWithValue("@timestamp", DateTimeOffset.UtcNow);
             cmd.Parameters.AddWithValue("@text", elem.GetMessage());
@@ -112,21 +112,20 @@ namespace CloudSpritzers1.src.repository
             InvalidateCacheEntry(messageId);
         }
 
-
         // TODO: I swear I wanted to remove stubs, not end more. I hope God and Mihai will forgive me, at least Mihai.
         private sealed class SenderStub : ISender
         {
-            private readonly int _id;
-            public SenderStub(int id) => _id = id;
-            public int GetId() => _id;
-            public string GetName() => string.Empty;
-            public string GetEmail() => string.Empty;
+            private readonly int identificationNumber;
+            public SenderStub(int id) => identificationNumber = id;
+            public int RetrieveUniqueDatabaseIdentifierForBot() => identificationNumber;
+            public string RetrieveConfiguredDisplayFullNameForBot() => string.Empty;
+            public string RetrieveConfiguredEmailAddressForBotContact() => string.Empty;
         }
-
-
-        private sealed class ChatStub : Chat
+       private sealed class ChatStub : Chat
         {
-            public ChatStub(int chatId) : base(chatId, userId: 0, ChatStatus.Active) { }
+            public ChatStub(int chatId) : base(chatId, userId: 0, ChatStatus.Active)
+            {
+            }
         }
     }
 }

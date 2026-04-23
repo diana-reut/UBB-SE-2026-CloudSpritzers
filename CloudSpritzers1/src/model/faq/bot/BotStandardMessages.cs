@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CloudSpritzers1.src.model.faq.bot
+namespace CloudSpritzers1.Src.Model.Faq.Bot
 {
     public enum BotStandardMessages
     {
         RESTART_CONVERSATION = 1,
-
     }
 }

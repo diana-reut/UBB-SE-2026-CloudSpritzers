@@ -12,18 +12,17 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using CloudSpritzers1.src.model.ticket;
-using CloudSpritzers1.src.repository;
-using CloudSpritzers1.src.service;
-using CloudSpritzers1.src.viewModel;
+using CloudSpritzers1.Src.Model.Ticket;
+using CloudSpritzers1.Src.Repository;
+using CloudSpritzers1.Src.Service;
+using CloudSpritzers1.Src.ViewModel;
 using Microsoft.UI;
 using Microsoft.Extensions.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
-
-namespace CloudSpritzers1.src.view.ticket
+namespace CloudSpritzers1.Src.View.Ticket
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
@@ -32,7 +31,7 @@ namespace CloudSpritzers1.src.view.ticket
     {
         public TicketsViewModel ViewModel { get; }
         public TicketEmployeeView()
-        {   
+        {
             ViewModel = (App.Current as App).Services.GetService<TicketsViewModel>();
             this.InitializeComponent();
             this.DataContext = ViewModel;
@@ -42,8 +41,11 @@ namespace CloudSpritzers1.src.view.ticket
         {
             if (sender is Button btn && btn.Tag is int ticketId)
             {
-                var ticket = ViewModel.TicketsRead.FirstOrDefault(t => t.TicketId == ticketId);
-                if (ticket == null) return;
+                var ticket = ViewModel.FilteredTicketsForDisplay.FirstOrDefault(t => t.ticketId == ticketId);
+                if (ticket == null)
+                {
+                    return;
+                }
 
                 var primaryButtonStyle = new Style(typeof(Button));
                 primaryButtonStyle.Setters.Add(new Setter(Button.BackgroundProperty, new SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0x2B, 0xB8, 0xC0))));
@@ -60,7 +62,7 @@ namespace CloudSpritzers1.src.view.ticket
                 closeButtonStyle.Setters.Add(new Setter(Button.CornerRadiusProperty, new CornerRadius(5))); // Rounded corners
                 var dialog = new ContentDialog
                 {
-                    Title = $"Edit Status for Ticket #{ticket.TicketId}",
+                    Title = $"Edit CurrentStatus for Ticket #{ticket.ticketId}",
                     PrimaryButtonText = "Save",
                     CloseButtonText = "Cancel",
                     XamlRoot = this.XamlRoot,
@@ -68,7 +70,6 @@ namespace CloudSpritzers1.src.view.ticket
                     PrimaryButtonStyle = primaryButtonStyle,
                     CloseButtonStyle = closeButtonStyle
                 };
-
 
                 var combo = new ComboBox
                 {
@@ -82,45 +83,48 @@ namespace CloudSpritzers1.src.view.ticket
                 };
 
                 // Add enum items as strings
-                foreach (var status in Enum.GetValues(typeof(StatusEnum)).Cast<StatusEnum>())
+                foreach (var status in Enum.GetValues(typeof(TicketStatusEnum)).Cast<TicketStatusEnum>())
                 {
                     combo.Items.Add(status.ToString());
                 }
 
                 // Set the selected item to current status
-                combo.SelectedItem = ticket.Status.ToString();
+                combo.SelectedItem = ticket.currentStatus.ToString();
 
                 dialog.Content = combo;
 
                 var result = await dialog.ShowAsync();
                 if (result == ContentDialogResult.Primary && combo.SelectedItem is string selectedStr)
                 {
-                    if (Enum.TryParse<StatusEnum>(selectedStr, out var newStatus))
+                    if (Enum.TryParse<TicketStatusEnum>(selectedStr, out var newStatus))
                     {
-                        ViewModel.UpdateStatus(ticket.TicketId, newStatus);
+                        ViewModel.UpdateStatus(ticket.ticketId, newStatus);
                     }
                 }
             }
         }
 
         // Optional: if you still have a filter combobox
-        
         private void FilterChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ViewModel == null)
+            {
                 return;
+            }
 
             var combo = sender as ComboBox;
 
             if (combo?.SelectedItem is not ComboBoxItem selected)
+            {
                 return;
+            }
 
             if (selected.Tag == null)
+            {
                 return;
+            }
 
             ViewModel.SelectedFilterString = selected.Tag.ToString();
-
         }
-
     }
 }

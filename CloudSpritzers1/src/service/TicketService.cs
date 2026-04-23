@@ -1,86 +1,120 @@
-﻿using CloudSpritzers1.src.dto;
-using CloudSpritzers1.src.model;
-using CloudSpritzers1.src.model.ticket;
-using CloudSpritzers1.src.repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CloudSpritzers1.Src.Dto;
+using CloudSpritzers1.Src.Model;
+using CloudSpritzers1.Src.Model.Ticket;
+using CloudSpritzers1.Src.Repository;
+using CloudSpritzers1.Src.Repository.Interfaces;
+using CloudSpritzers1.Src.Service.Interfaces;
+using CloudSpritzers1.Src.ViewModel;
 using Windows.System;
-using User = CloudSpritzers1.src.model.User;
+using User = CloudSpritzers1.Src.Model.User;
 
-namespace CloudSpritzers1.src.service
+namespace CloudSpritzers1.Src.Service
 {
-    public class TicketService
+    public class TicketService : ITicketService
     {
-        private readonly TicketRepository _ticketRepository;
+        private readonly ITicketRepository ticketRepository;
 
-        public TicketService(TicketRepository repository)
+        public TicketService(ITicketRepository ticketRepository)
         {
-            _ticketRepository = repository;
-        }
-
-        public void CreateTicket(int ticketId, User user, StatusEnum status, TicketCategory category, TicketSubcategory subcategory, string subject, string description, DateTime createdAt, UrgencyLevelEnum? urgencyLevel = null)
-        {  
-            Ticket ticket = new Ticket(ticketId, user, status, category, subcategory, subject, description, createdAt, urgencyLevel);
-            ValidateTicket(ticket);
-            AddTicket(ticket);
+            this.ticketRepository = ticketRepository;
         }
 
-        public void AddTicket(Ticket ticket)
+        public void CreateTicket(int ticketId, User ticketCreator, TicketStatusEnum initialStatus, TicketCategory category, TicketSubcategory subcategory, string subject, string description, DateTime creationTimestamp, TicketUrgencyLevelEnum? initialUrgencyLevel = null)
         {
-            _ticketRepository.Add(ticket);
+            Ticket newTicket = new Ticket(ticketId, ticketCreator, initialStatus, category, subcategory, subject, description, creationTimestamp, initialUrgencyLevel);
+
+            ValidateTicket(newTicket);
+            AddTicket(newTicket);
         }
-        public void DeleteTicket(int ticketId)
+
+        public void AddTicket(Ticket ticketEntity)
         {
-            _ticketRepository.DeleteById(ticketId);
+            ticketRepository.CreateNewEntity(ticketEntity);
         }
-        public Ticket GetTicket(int ticketId)
+        public void DeleteTicketById(int ticketId)
         {
-            return _ticketRepository.GetById(ticketId);
+            ticketRepository.DeleteById(ticketId);
+        }
+        public Ticket GetTicketById(int ticketId)
+        {
+            return ticketRepository.GetById(ticketId);
         }
 
         public IEnumerable<Ticket> GetAllTickets()
         {
-            return _ticketRepository.GetAll();
+            return ticketRepository.GetAll();
         }
-        public void UpdateById(int id, Ticket ticket)
+        public void UpdateTicketById(int id, Ticket ticket)
         {
-            _ticketRepository.UpdateById(id, ticket);
+            ticketRepository.UpdateById(id, ticket);
         }
-        
         public void ValidateTicket(Ticket ticket)
         {
             if (ticket == null)
-                throw new ArgumentNullException("The ticket does not have any data.");
-            if (ticket.User == null)
-                throw new ArgumentNullException("The user does not have any data.");
+            {
+                throw new ArgumentNullException("The newTicket does not have any data.");
+            }
+            if (ticket.Creator == null)
+            {
+                throw new ArgumentNullException("The ticketCreator does not have any data.");
+            }
             if (ticket.Category == null)
+            {
                 throw new ArgumentNullException("Null Category.");
+            }
             if (ticket.Subcategory == null)
+            {
                 throw new ArgumentNullException("Null Subcategory.");
-            if (ticket.Subcategory.Category.CategoryId != ticket.Category.CategoryId)
-                throw new ArgumentException($"The subcategory '{ticket.Subcategory.SubcategoryName}' does not belong to the category '{ticket.Category.Name}'");
+            }
+            if (ticket.Subcategory.ParentCategory.CategoryId != ticket.Category.CategoryId)
+            {
+                throw new ArgumentException($"The subcategory '{ticket.Subcategory.SubcategoryName}' does not belong to the category '{ticket.Category.CategoryName}'");
+            }
             if (string.IsNullOrWhiteSpace(ticket.Subject))
+            {
                 throw new ArgumentNullException("The Subject is empty.");
+            }
             if (string.IsNullOrWhiteSpace(ticket.Description))
+            {
                 throw new ArgumentNullException("The Description is empty.");
+            }
         }
 
-        public void UpdateUrgencyLevel(int ticketId, UrgencyLevelEnum urgencyLevel)
+        public void UpdateUrgencyLevel(int ticketId, TicketUrgencyLevelEnum newUrgencyLevel)
         {
-            Ticket elem = _ticketRepository.GetById(ticketId);
-            elem.ChangeUrgencyLevel(urgencyLevel);
-            _ticketRepository.UpdateById(ticketId, elem);
+            Ticket targetTicket = ticketRepository.GetById(ticketId);
+            targetTicket.UpdateUrgencyLevel(newUrgencyLevel);
+            ticketRepository.UpdateById(ticketId, targetTicket);
         }
 
-        public void UpdateStatus(int ticketId, StatusEnum status)
+        public void UpdateStatus(int ticketId, TicketStatusEnum newStatus)
         {
-            Ticket elem = _ticketRepository.GetById(ticketId);
-            elem.UpdateStatus(status);
-            _ticketRepository.UpdateById(ticketId, elem);
+            Ticket targetTicket = ticketRepository.GetById(ticketId);
+            targetTicket.UpdateStatus(newStatus);
+            ticketRepository.UpdateById(ticketId, targetTicket);
         }
 
+        public IEnumerable<TicketDTO> FilterTicketsByStatus(IEnumerable<TicketDTO> tickets, TicketFilterStatusEnum filter)
+        {
+            switch (filter)
+            {
+                case TicketFilterStatusEnum.OPEN:
+                    return tickets.Where(IsStatusOpen);
+                case TicketFilterStatusEnum.IN_PROGRESS:
+                    return tickets.Where(IsStatusInProgress);
+                case TicketFilterStatusEnum.RESOLVED:
+                    return tickets.Where(IsStatusResolved);
+                default:
+                    return tickets;
+            }
+        }
+        private bool IsStatusOpen(TicketDTO ticket) => ticket.currentStatus == TicketStatusEnum.OPEN;
+        private bool IsStatusInProgress(TicketDTO ticket) => ticket.currentStatus == TicketStatusEnum.IN_PROGRESS;
+        private bool IsStatusResolved(TicketDTO ticket) => ticket.currentStatus == TicketStatusEnum.RESOLVED;
     }
 }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CloudSpritzers1.src.dto
+namespace CloudSpritzers1.Src.Dto
 {
     public record ReviewDTO(
-        int id,
+        int reviewId,
         int userId,
         string userName,
         string message,
@@ -15,6 +15,5 @@ namespace CloudSpritzers1.src.dto
         int flightExperienceRating,
         int staffFriendlinessRating,
         int cleanlinessRating,
-        float overallRating
-    );
+        float overallRating);
 }

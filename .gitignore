@@ -416,3 +416,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+.env
+
+# Coverage reports
+**/coveragereport/
+**/coverage-report/

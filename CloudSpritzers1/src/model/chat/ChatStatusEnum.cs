@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CloudSpritzers1.src.model.chat
+namespace CloudSpritzers1.Src.Model.Chats
 {
     public enum ChatStatus
     {

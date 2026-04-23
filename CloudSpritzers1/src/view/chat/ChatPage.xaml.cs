@@ -1,18 +1,17 @@
-﻿using CloudSpritzers1.src.viewmodel;
-using CloudSpritzers1.src.viewModel.chat;
-using CloudSpritzers1.src.viewModel.general;
+﻿using System;
+using CloudSpritzers1.Src.ViewModel;
+using CloudSpritzers1.Src.ViewModel.Chats;
+using CloudSpritzers1.Src.ViewModel.General;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
 
-namespace CloudSpritzers1.src.view.chat
+namespace CloudSpritzers1.Src.View.Chat
 {
-
     public sealed partial class ChatPage : Page
     {
-        public ChatViewModel ViewModel { get; }       
+        public ChatViewModel ViewModel { get; }
         public ChatPage()
         {
             ViewModel = (App.Current as App).Services.GetService<ChatViewModel>();
@@ -22,7 +21,7 @@ namespace CloudSpritzers1.src.view.chat
         public void EndChat(object sender, RoutedEventArgs e)
         {
             ViewModel.CloseChat();
-            this.Frame.Navigate(typeof(CloudSpritzers1.src.view.general.LandingPage));
+            this.Frame.Navigate(typeof(CloudSpritzers1.Src.View.General.LandingPage));
         }
     }
 }

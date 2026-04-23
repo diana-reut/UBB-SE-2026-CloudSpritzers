@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CloudSpritzers1.src.model.chat;
-using CloudSpritzers1.src.model.faq.bot;
+using CloudSpritzers1.Src.Model.Chats;
+using CloudSpritzers1.Src.Model.Faq.Bot;
 
-namespace CloudSpritzers1.src.model.message
+namespace CloudSpritzers1.Src.Model.Message
 {
     public interface IMessage
     {
@@ -20,6 +20,5 @@ namespace CloudSpritzers1.src.model.message
         public Chat GetChat();
 
         public DateTimeOffset GetTimeStamp();
-
     }
 }

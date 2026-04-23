@@ -1,5 +1,11 @@
-using CloudSpritzers1.src.view.chat;
-using CloudSpritzers1.src.view.general;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using CloudSpritzers1.Src.View.Chat;
+using CloudSpritzers1.Src.View.General;
+using CloudSpritzers1.Src.ViewModel.General;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -7,55 +13,87 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
-
-namespace CloudSpritzers1.src.view.general
+namespace CloudSpritzers1.Src.View.General
 {
     public sealed partial class EnterYourId : Page
     {
-        public string UserId { get; set; }
+        /// <summary>
+        /// The ViewModel containing user input and authentication logic.
+        /// </summary>
+        public EnterYourIdViewModel ViewModel { get; } = new ();
+
+        /// <summary>
+        /// Initializes a new instance of the EnterYourId page and sets the DataContext.
+        /// </summary>
         public EnterYourId()
-        {        
+        {
             this.InitializeComponent();
+            this.DataContext = ViewModel;
         }
 
-        private async void showError(string message, string title)
+        /// <summary>
+        /// Displays an error dialog with the specified message and title.
+        /// </summary>
+        /// <param name="messageContent">The error message to display.</param>
+        /// <param name="titleText">The title of the error dialog.</param>
+        private async void DisplayErrorMessage(string messageContent, string titleText)
         {
-            var dialog1 = new MaiBoule(message, title);
-            dialog1.XamlRoot = this.Content.XamlRoot;
-            await dialog1.ShowAsync();
+            var errorDialog = new MaiBoule(messageContent, titleText);
+            errorDialog.XamlRoot = this.Content.XamlRoot;
+            await errorDialog.ShowAsync();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Handles the login button click event.
+        /// Validates the user input, shows a confirmation dialog, and attempts authentication.
+        /// Navigates to the LandingPage on success or displays an error on failure.
+        /// </summary>
+        /// <param name="sender">The button that was clicked.</param>
+        /// <param name="eventArguments">Event data for the click event. </param>
+        private async void LoginButton_Click(object sender, RoutedEventArgs eventArguments)
         {
-            if (int.TryParse(UserId, out int parsedId))
+            // The View handles UI Flow, the ViewModel handles the Data
+            if (int.TryParse(ViewModel.UserIdentification, out int parsedId))
             {
-                var dialog = new YouSure($"Are you certain you are User {parsedId}?", "Dear Passenger");
-                dialog.XamlRoot = this.Content.XamlRoot;
+                var confirmationDialog = new YouSure($"Are you certain you are ID {parsedId}?", "Confirmation");
+                confirmationDialog.XamlRoot = this.Content.XamlRoot;
 
-                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+                if (await confirmationDialog.ShowAsync() == ContentDialogResult.Primary)
                 {
-                    try
+                    if (ViewModel.TryAuthenticate(out _))
                     {
-                        (App.Current as App).SetUser(parsedId);
-                        this.Frame.Navigate(typeof(CloudSpritzers1.src.view.general.LandingPage));
+                        this.Frame.Navigate(typeof(LandingPage));
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        showError("Invalid Id - does not exist", "ERROR");
+                        DisplayErrorMessage("The ID entered does not exist.", "ERROR");
                     }
                 }
             }
             else
             {
-                showError("You need to insert an integer.", "ERROR");
+                DisplayErrorMessage("Please enter a valid numeric ID.", "FORMAT ERROR");
+            }
+        }
+
+        /// <summary>
+        /// Handles the back button click event.
+        /// Navigates back if possible, or to the ChoosingPage if not.
+        /// </summary>
+        /// <param name="sender">The button that was clicked.</param>
+        /// <param name="eventArguments">Event data for the click event.</param>
+        private void BackButton_Click(object sender, RoutedEventArgs eventArguments)
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
+            }
+            else
+            {
+                this.Frame.Navigate(typeof(ChoosingPage));
             }
         }
     }

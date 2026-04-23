@@ -1,9 +1,9 @@
-namespace CloudSpritzers1.src.model.message
+namespace CloudSpritzers1.Src.Model.Message
 {
     public interface ISender
     {
-        int GetId();
-        string GetName();
-        string GetEmail();
+        int RetrieveUniqueDatabaseIdentifierForBot();
+        string RetrieveConfiguredDisplayFullNameForBot();
+        string RetrieveConfiguredEmailAddressForBotContact();
     }
 }

@@ -1,9 +1,9 @@
 <Page
-    x:Class="CloudSpritzers1.src.view.review.EmployeeSeeReviews"
+    x:Class="CloudSpritzers1.Src.View.Review.EmployeeSeeReviews"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:CloudSpritzers1.src.view.review"
-    xmlns:general="using:CloudSpritzers1.src.view.general"
+    xmlns:local="using:CloudSpritzers1.Src.View.Review"
+    xmlns:general="using:CloudSpritzers1.Src.View.General"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -83,7 +83,7 @@
                                         <Grid ColumnDefinitions="Auto, *, Auto">
                                             <Grid Width="48" Height="48">
                                                 <Ellipse Fill="{ThemeResource PrimaryBrush}"/>
-                                                <TextBlock Text="{Binding Initials}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding userId}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontWeight="Bold"/>
                                             </Grid>
 
                                             <StackPanel Grid.Column="1" Margin="16,0" VerticalAlignment="Center">

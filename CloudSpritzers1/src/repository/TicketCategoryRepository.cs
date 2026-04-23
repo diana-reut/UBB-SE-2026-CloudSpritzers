@@ -1,41 +1,45 @@
-﻿using CloudSpritzers1.src.model.ticket;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CloudSpritzers1.Src.Model.Ticket;
+using CloudSpritzers1.Src.Repository.Interfaces;
+using CloudSpritzers1.Src.Repository.Database;
+using CloudSpritzers1.Src.Repository.Database;
+using Microsoft.Data.SqlClient;
 
-public class TicketCategoryRepository : DBRepository<int, TicketCategory>
+using CloudSpritzers1.Src.Repository;
+
+public class TicketCategoryRepository : DatabaseRepository<int, TicketCategory>, ITicketCategoryRepository
 {
     public IEnumerable<TicketCategory> GetAll()
     {
         string query = "SELECT * FROM TicketCategory";
         SqlCommand command = new SqlCommand(query);
-        return base.GetAll(command);
+        return GetAll(command);
     }
 
-    public TicketCategory GetById(int id)
+    public TicketCategory GetById(int categoryId)
     {
         string query = "SELECT * FROM TicketCategory WHERE category_id = @id";
         SqlCommand command = new SqlCommand(query);
-        command.Parameters.AddWithValue("@id", id);
-        return base.GetById(id, command);
+        command.Parameters.AddWithValue("@id", categoryId);
+        return GetById(categoryId, command);
     }
 
     protected override TicketCategory MapRowToEntity(SqlDataReader reader)
     {
         int categoryId = reader.GetInt32(reader.GetOrdinal("category_id"));
-        string name = reader.GetString(reader.GetOrdinal("name"));
-        //UrgencyLevelEnum urgency = UrgencyLevelEnum.LOW;
-        string urgencyStr = reader.GetString(reader.GetOrdinal("urgency_level"));
+        string categoryName = reader.GetString(reader.GetOrdinal("name"));
+        string urgencyLevelString = reader.GetString(reader.GetOrdinal("urgency_level"));
 
-        if (!Enum.TryParse<UrgencyLevelEnum>(urgencyStr, true, out var urgency))
+        if (!Enum.TryParse<TicketUrgencyLevelEnum>(urgencyLevelString, true, out var urgencyLevel))
         {
-            urgency = UrgencyLevelEnum.LOW; 
+            urgencyLevel = TicketUrgencyLevelEnum.LOW;
         }
-        return new TicketCategory(categoryId, name, urgency);
+        return new TicketCategory(categoryId, categoryName, urgencyLevel);
     }
 
-    protected override int GetEntityId(TicketCategory entity) => entity.CategoryId;
+    protected override int GetEntityId(TicketCategory categoryEntity) => categoryEntity.CategoryId;
 }

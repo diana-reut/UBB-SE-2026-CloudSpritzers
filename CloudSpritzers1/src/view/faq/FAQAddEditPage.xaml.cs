@@ -3,8 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using AutoMapper;
+using CloudSpritzers1.Src.Dto;
+using CloudSpritzers1.Src.Dto.MappingProfiles;
+using CloudSpritzers1.Src.Model.Faq;
+using CloudSpritzers1.Src.Repository;
+using CloudSpritzers1.Src.Repository.Implementation;
+using CloudSpritzers1.Src.Service.Implementation;
+using CloudSpritzers1.Src.ViewModel.Faq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -12,73 +19,38 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using CloudSpritzers1.src.dto;
-using CloudSpritzers1.src.viewModel.faq;
-using CloudSpritzers1.src.dto.mappingProfiles;
-using AutoMapper;
-using CloudSpritzers1.src.repository;
-using CloudSpritzers1.src.service;
-using CloudSpritzers1.src.model.faq;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
-
-namespace CloudSpritzers1.src.view.faq
+namespace CloudSpritzers1.Src.View.Faq
 {
-   
     public sealed partial class FAQAddEditPage : Page
     {
-
-        private FAQViewModel _viewModel;
-        private FAQEntryDTO? _editingFaq;
-        private bool _isEditMode;
-        private int _currentPersonId;
-
-        private bool IsEmployee(int id)
-        {
-            try
-            {
-                var employeeRepository = new EmployeeRepository();
-                var employee = employeeRepository.GetById(id);
-                return employee != null;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        private FAQViewModel viewModel;
+        private FAQEntryDTO? editingFaq;
+        private bool isEditMode;
+        private int currentPersonId;
 
         public FAQAddEditPage()
         {
             this.InitializeComponent();
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<FAQEntryMappingProfile>();
-            });
 
-            var mapper = mapperConfig.CreateMapper();
-            var repository = new FAQRepository();
-            var service = new FAQService(repository);
-
-            //bool isAdmin = true; // for testing admin features
-            //_viewModel = new FAQViewModel(service, mapper, isAdmin);
-            _viewModel = new FAQViewModel(service, mapper, false);
-
+            var app = (App)Application.Current;
+            viewModel = app.Services.GetRequiredService<FAQViewModel>();
         }
 
-        //protected override void OnNavigatedTo(NavigationEventArgs e)
-        //{
+        // protected override void OnNavigatedTo(NavigationEventArgs e)
+        // {
         //    base.OnNavigatedTo(e);
-
         //    if (e.Parameter is FAQEntryDTO faq)
         //    {
         //        _editingFaq = faq;
         //        _isEditMode = true;
-
         //        QuestionTextBox.Text = faq.Question;
         //        AnswerTextBox.Text = faq.Answer;
         //        CategoryComboBox.SelectedItem = FindCategoryComboBoxItem(faq.Category);
-
         //        PageTitleText.Text = "Edit FAQ";
         //        PageSubtitleText.Text = "Update the selected frequently asked question entry";
         //        SaveButton.Content = "Save Changes";
@@ -87,32 +59,26 @@ namespace CloudSpritzers1.src.view.faq
         //    {
         //        _editingFaq = null;
         //        _isEditMode = false;
-
         //        PageTitleText.Text = "Add FAQ";
         //        PageSubtitleText.Text = "Create a frequently asked question entry";
         //        SaveButton.Content = "Add FAQ";
         //    }
-        //}
-
-        //protected override void OnNavigatedTo(NavigationEventArgs e)
-        //{
+        // }
+        // protected override void OnNavigatedTo(NavigationEventArgs e)
+        // {
         //    base.OnNavigatedTo(e);
-
         //    if (e.Parameter is FAQNavigationData navData)
         //    {
         //        _currentPersonId = navData.CurrentPersonId;
         //        _viewModel.IsAdmin = IsEmployee(_currentPersonId);
-
         //        if (navData.FAQEntry != null)
         //        {
         //            var faq = navData.FAQEntry;
         //            _editingFaq = faq;
         //            _isEditMode = true;
-
         //            QuestionTextBox.Text = faq.Question;
         //            AnswerTextBox.Text = faq.Answer;
         //            CategoryComboBox.SelectedItem = FindCategoryComboBoxItem(faq.Category);
-
         //            PageTitleText.Text = "Edit FAQ";
         //            PageSubtitleText.Text = "Update the selected frequently asked question entry";
         //            SaveButton.Content = "Save Changes";
@@ -121,36 +87,33 @@ namespace CloudSpritzers1.src.view.faq
         //        {
         //            _editingFaq = null;
         //            _isEditMode = false;
-
         //            QuestionTextBox.Text = string.Empty;
         //            AnswerTextBox.Text = string.Empty;
         //            CategoryComboBox.SelectedItem = null;
-
         //            PageTitleText.Text = "Add FAQ";
         //            PageSubtitleText.Text = "Create a frequently asked question entry";
         //            SaveButton.Content = "Add FAQ";
         //        }
         //    }
-        //}
-
+        // }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
             if (e.Parameter is FAQNavigationData navData)
             {
-                _currentPersonId = navData.CurrentPersonId;
-                _viewModel.IsAdmin = navData.IsEmployee;
+                currentPersonId = navData.CurrentPersonId;
+                viewModel.IsAdmin = navData.IsEmployee;
 
                 if (navData.FAQEntry != null)
                 {
-                    var faq = navData.FAQEntry;
-                    _editingFaq = faq;
-                    _isEditMode = true;
+                    editingFaq = navData.FAQEntry;
+                    isEditMode = true;
+                    viewModel.SelectedFAQEntry = navData.FAQEntry;
 
-                    QuestionTextBox.Text = faq.Question;
-                    AnswerTextBox.Text = faq.Answer;
-                    CategoryComboBox.SelectedItem = FindCategoryComboBoxItem(faq.Category);
+                    QuestionTextBox.Text = editingFaq.Question;
+                    AnswerTextBox.Text = editingFaq.Answer;
+                    CategoryComboBox.SelectedItem = FindCategoryComboBoxItem(editingFaq.Category);
 
                     PageTitleText.Text = "Edit FAQ";
                     PageSubtitleText.Text = "Update the selected frequently asked question entry";
@@ -158,8 +121,9 @@ namespace CloudSpritzers1.src.view.faq
                 }
                 else
                 {
-                    _editingFaq = null;
-                    _isEditMode = false;
+                    editingFaq = null;
+                    isEditMode = false;
+                    viewModel.SelectedFAQEntry = null;
 
                     QuestionTextBox.Text = string.Empty;
                     AnswerTextBox.Text = string.Empty;
@@ -201,63 +165,12 @@ namespace CloudSpritzers1.src.view.faq
 
         private async System.Threading.Tasks.Task HandleSaveChanges()
         {
-            string question = QuestionTextBox.Text?.Trim() ?? string.Empty;
-            string answer = AnswerTextBox.Text?.Trim() ?? string.Empty;
-
-            if (CategoryComboBox.SelectedItem is not ComboBoxItem selectedCategoryItem)
-            {
-                await ShowMessage("Validation error", "Please select a category.");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(question))
-            {
-                await ShowMessage("Validation error", "Question cannot be empty.");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(answer))
-            {
-                await ShowMessage("Validation error", "Answer cannot be empty.");
-                return;
-            }
-
-            if (!Enum.TryParse<FAQCategoryEnum>(selectedCategoryItem.Content?.ToString(), out var category))
-            {
-                await ShowMessage("Validation error", "Invalid category selected.");
-                return;
-            }
-
             try
             {
-                if (_isEditMode && _editingFaq != null)
-                {
-                    var updatedFaq = new FAQEntryDTO(
-                        _editingFaq.Id,
-                        question,
-                        answer,
-                        category,
-                        _editingFaq.ViewCount,
-                        _editingFaq.WasHelpfulVotes,
-                        _editingFaq.WasNotHelpfulVotes
-                    );
-
-                    _viewModel.EditFAQEntry(updatedFaq);
-                }
-                else
-                {
-                    var newFaq = new FAQEntryDTO(
-                        0,
-                        question,
-                        answer,
-                        category,
-                        0,
-                        0,
-                        0
-                    );
-
-                    _viewModel.AddFAQEntry(newFaq);
-                }
+                await viewModel.Save(
+                    QuestionTextBox.Text,
+                    AnswerTextBox.Text,
+                    (CategoryComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString());
 
                 if (Frame != null && Frame.CanGoBack)
                 {
@@ -268,10 +181,7 @@ namespace CloudSpritzers1.src.view.faq
             {
                 await ShowMessage("Save failed", ex.Message);
             }
-
-
         }
-
         private async System.Threading.Tasks.Task ShowMessage(string title, string message)
         {
             var dialog = new ContentDialog
@@ -283,10 +193,6 @@ namespace CloudSpritzers1.src.view.faq
             };
 
             await dialog.ShowAsync();
-
         }
-
-
-    
-}
+    }
 }

@@ -4,47 +4,46 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CloudSpritzers1.src.model.faq.bot;
-using CloudSpritzers1.src.model.message;
-using CloudSpritzers1.src.repository;
-using CloudSpritzers1.src.service.bot.strategy;
+using CloudSpritzers1.Src.Model.Faq.Bot;
+using CloudSpritzers1.Src.Model.Message;
+using CloudSpritzers1.Src.Repository;
+using CloudSpritzers1.Src.Service.Bot.Strategy;
 
-namespace CloudSpritzers1.src.service.bot
+namespace CloudSpritzers1.Src.Service.Bot
 {
     public class BotEngine : ISender
     {
-        public const int BOT_CANNONIZED_ID = 0;
-        private IBotStrategy _responseStrategy;
+        public const int CONSTANT_IDENTIFIER_FOR_DEFAULT_BOT_SYSTEM_USER = 0; // ChatBot is always identified as the first
+        private IBotStrategy activeStrategyForFormulatingBotResponses;
 
         public BotEngine(IBotStrategy responseStrategy)
         {
-            this._responseStrategy = responseStrategy;
+            this.activeStrategyForFormulatingBotResponses = responseStrategy;
         }
 
-
-        public BotMessage Respond(IMessage message)
+        public BotMessage GenerateAppropriateResponseBasedOnCurrentStrategy(IMessage message)
         {
-            return _responseStrategy.Process(this, message);
+            return activeStrategyForFormulatingBotResponses.ProcessIncomingUserMessageAndDetermineNextDecisionTreeNode(this, message);
         }
-        
-        public string GetEmail()
+
+        public string RetrieveConfiguredEmailAddressForBotContact()
         {
             return "customer-support@cloudspritzers.com";
         }
 
-        public string GetName()
+        public string RetrieveConfiguredDisplayFullNameForBot()
         {
             return "Carlos";
         }
 
-        public int GetId()
+        public int RetrieveUniqueDatabaseIdentifierForBot()
         {
-            return 0; // ChatBot is always identified as the first 
+            return CONSTANT_IDENTIFIER_FOR_DEFAULT_BOT_SYSTEM_USER;
         }
 
-        public void ResetToRoot()
+        public void ResetBotConversationStateToInitialRootNode()
         {
-            _responseStrategy.ResetToRoot();
+            activeStrategyForFormulatingBotResponses.ResetCurrentlyActiveConversationNodeToInitialStartingPoint();
         }
     }
 }

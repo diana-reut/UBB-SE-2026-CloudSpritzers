@@ -1,25 +1,25 @@
-using CloudSpritzers1.src.model.message;
+using CloudSpritzers1.Src.Model.Message;
 
-namespace CloudSpritzers1.src.model
+namespace CloudSpritzers1.Src.Model
 {
     public class User : ISender
     {
-        private int _userId;
-        private string _name;
-        private string _email;
+        private int userId;
+        private string fullName;
+        private string emailAddress;
 
-        public User(int userId, string name, string email)
+        public User(int userId, string fullName, string emailAddress)
         {
-            _userId = userId;
-            _name = name;
-            _email = email;
+            this.userId = userId;
+            this.fullName = fullName;
+            this.emailAddress = emailAddress;
         }
 
-        public int UserId => _userId;
+        public int UserId => userId;
 
-        public string GetName() => _name;
-        public string GetEmail() => _email;
+        public string RetrieveConfiguredDisplayFullNameForBot() => fullName;
+        public string RetrieveConfiguredEmailAddressForBotContact() => emailAddress;
 
-        public int GetId() => _userId;
+        public int RetrieveUniqueDatabaseIdentifierForBot() => userId;
     }
 }

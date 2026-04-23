@@ -1,9 +1,9 @@
 ﻿using System;
 using AutoMapper;
-using CloudSpritzers1.src.dto;
-using CloudSpritzers1.src.model.message;
-using CloudSpritzers1.src.service;
-using CloudSpritzers1.src.service.bot;
+using CloudSpritzers1.Src.Dto;
+using CloudSpritzers1.Src.Model.Message;
+using CloudSpritzers1.Src.Service;
+using CloudSpritzers1.Src.Service.Bot;
 
 public class MessageMappingProfile : Profile
 {
@@ -15,12 +15,12 @@ public class MessageMappingProfile : Profile
                 new DateTimeOffset(((IMessage)src).GetTimeStamp().Ticks, TimeSpan.Zero)))
             .ForMember(dest => dest.FaqOptions, opt => opt.MapFrom(src => src.GetNextOptions()))
             .ForMember(dest => dest.ChatId, opt => opt.MapFrom(src => src.GetChat().ChatId))
-            .ForMember(dest => dest.SenderName, opt => opt.MapFrom(src => src.GetSender().GetName()))
-            .ForMember(dest => dest.SenderId, opt => opt.MapFrom(src => src.GetSender().GetId()));
+            .ForMember(dest => dest.SenderName, opt => opt.MapFrom(src => src.GetSender().RetrieveConfiguredDisplayFullNameForBot()))
+            .ForMember(dest => dest.SenderId, opt => opt.MapFrom(src => src.GetSender().RetrieveUniqueDatabaseIdentifierForBot()));
 
         CreateMap<BotMessage, MessageDTO>()
             .IncludeBase<IMessage, MessageDTO>()
-            .ForMember(dest => dest.SenderId, opt => opt.MapFrom(src => BotEngine.BOT_CANNONIZED_ID));
+            .ForMember(dest => dest.SenderId, opt => opt.MapFrom(src => BotEngine.CONSTANT_IDENTIFIER_FOR_DEFAULT_BOT_SYSTEM_USER));
 
         CreateMap<Message, MessageDTO>()
             .IncludeBase<IMessage, MessageDTO>();

@@ -1,9 +1,9 @@
 <Page
-    x:Class="CloudSpritzers1.src.view.general.LandingPage"
+    x:Class="CloudSpritzers1.Src.View.General.LandingPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:general="using:CloudSpritzers1.src.view.general"
-    xmlns:dto="using:CloudSpritzers1.src.dto"
+    xmlns:general="using:CloudSpritzers1.Src.View.General"
+    xmlns:dto="using:CloudSpritzers1.Src.Dto"
     Background="{ThemeResource CardBackgroundBrush}">
 
     <Grid>

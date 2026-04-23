@@ -1,29 +1,27 @@
-using CloudSpritzers1.src.model.message;
+using CloudSpritzers1.Src.Model.Message;
 
-
-namespace CloudSpritzers1.src.model.employee
+namespace CloudSpritzers1.Src.Model.Employee
 {
     public class Employee : ISender
     {
-        private int _employeeId;
-        private string _name;
-        private string _email;
-        private GroupEnum _group;
+        private int employeeId;
+        private string fullName;
+        private string emailAddress;
+        private EmployeeDepartment assignedDepartment;
 
-        public Employee(int employeeId, string name, string email, GroupEnum groupEnum)
+        public Employee(int employeeIdentificationNumber, string fullName, string emailAddress, EmployeeDepartment assignedDepartment)
         {
-            _employeeId = employeeId;
-            _name = name;
-            _email = email;
-            _group = groupEnum;
+            employeeId = employeeIdentificationNumber;
+            this.fullName = fullName;
+            this.emailAddress = emailAddress;
+            this.assignedDepartment = assignedDepartment;
         }
 
-        public int EmployeeId => _employeeId;
-        public string GetGroup() => _group.ToString();
+        public int EmployeeId => employeeId;
+        public string GetDepartmentName() => assignedDepartment.ToString();
 
-        public string GetName() => _name;
-        public string GetEmail() => _email;
-
-        public int GetId() => _employeeId;
+        public string RetrieveConfiguredDisplayFullNameForBot() => fullName;
+        public string RetrieveConfiguredEmailAddressForBotContact() => emailAddress;
+        public int RetrieveUniqueDatabaseIdentifierForBot() => employeeId;
     }
 }

@@ -3,6 +3,7 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
 		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<WindowsPackageType>None</WindowsPackageType>
 		<RootNamespace>CloudSpritzers1</RootNamespace>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Platforms>x86;x64;ARM64</Platforms>
@@ -11,21 +12,25 @@
 		<UseWinUI>true</UseWinUI>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<Nullable>enable</Nullable>
+		<WindowsPackageType>None</WindowsPackageType>
+		<CodeAnalysisRuleSet>SE.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<CodeAnalysisRuleSet>SE.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 	<ItemGroup>
-		<Compile Remove="src\viewModel\general\ChoosingPageViewModel.cs" />
-		<Compile Remove="src\view\faq\FAQPage.xaml.cs" />
+		<Compile Remove="Src\View\Faq\FAQPage.xaml.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove=".env" />
-		<None Remove="src\view\faq\FAQAddEditPage.xaml" />
-		<None Remove="src\view\faq\FAQView.xaml" />
-		<None Remove="src\view\general\ChoosingPage.xaml" />
-		<None Remove="src\view\general\LandingPage.xaml" />
-		<None Remove="src\view\general\MaiBoule.xaml" />
-		<None Remove="src\view\review\EmployeeSeeReviews.xaml" />
-		<None Remove="src\view\review\ReviewPage.xaml" />
-		<None Remove="src\view\ticket\TicketEmployeeView.xaml" />
+		<None Remove="Src\View\Faq\FAQAddEditPage.xaml" />
+		<None Remove="Src\View\Faq\FAQView.xaml" />
+		<None Remove="Src\View\General\ChoosingPage.xaml" />
+		<None Remove="Src\View\General\LandingPage.xaml" />
+		<None Remove="Src\View\General\MaiBoule.xaml" />
+		<None Remove="Src\View\Review\EmployeeSeeReviews.xaml" />
+		<None Remove="Src\View\Review\ReviewPage.xaml" />
+		<None Remove="Src\View\Ticket\TicketEmployeeView.xaml" />
 	</ItemGroup>
 	<ItemGroup>
 		<Page Remove="ChatPage.xaml" />
@@ -57,45 +62,54 @@
 		<ProjectCapability Include="Msix" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Include="src\viewModel\general\ChoosingPageViewModel.cs" />
-	</ItemGroup>
-	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="12.0.0" />
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+		<PackageReference Include="coverlet.collector" Version="8.0.1">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="DotNetEnv" Version="3.1.1" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
+		<PackageReference Include="MSTest.TestAdapter" Version="4.2.1" />
+		<PackageReference Include="MSTest.TestFramework" Version="4.2.1" />
+		<PackageReference Include="NSubstitute" Version="6.0.0-rc.1" />
+		<PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.5" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Update="src\view\chat\ChatPage.xaml">
+		<None Update="Src\View\Chat\ChatPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</None>
-		<Page Update="src\view\ticket\TicketEmployeeView.xaml">
+		<Page Update="Src\View\Ticket\TicketEmployeeView.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</Page>
-		<Page Update="src\view\general\MaiBoule.xaml">
+		<Page Update="Src\View\General\MaiBoule.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</Page>
-		<Page Update="src\view\faq\FAQView.xaml">
+		<Page Update="Src\View\Faq\FAQView.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
-		<Page Update="src\view\faq\FAQAddEditPage.xaml">
+		<Page Update="Src\View\Faq\FAQAddEditPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
-		<Page Update="src\view\review\EmployeeSeeReviews.xaml">
+		<Page Update="Src\View\Review\EmployeeSeeReviews.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
-		<Page Update="src\view\review\ReviewPage.xaml">
+		<Page Update="Src\View\Review\ReviewPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
-		<Page Update="src\view\general\LandingPage.xaml">
+		<Page Update="Src\View\General\LandingPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
-		<Page Update="src\view\general\ChoosingPage.xaml">
+		<Page Update="Src\View\General\ChoosingPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
 		<Page Update="src\view\generic\ThemeResource.xaml">

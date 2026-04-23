@@ -1,32 +1,32 @@
-﻿using CloudSpritzers1.src.model.ticket;
-using CloudSpritzers1.src.repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CloudSpritzers1.Src.Model.Ticket;
+using CloudSpritzers1.Src.Repository;
+using CloudSpritzers1.Src.Repository.Interfaces;
+using CloudSpritzers1.Src.Service.Interfaces;
 
-public class TicketSubcategoryService
+public class TicketSubcategoryService : ITicketSubcategoryService
 {
-    private readonly TicketSubcategoryRepository _subcategoryRepo;
+    private readonly ITicketSubcategoryRepository subcategoryRepository;
 
-    public TicketSubcategoryService(TicketSubcategoryRepository subcategoryRepo)
+    public TicketSubcategoryService(ITicketSubcategoryRepository subcategoryRepository)
     {
-        _subcategoryRepo = subcategoryRepo;
+        this.subcategoryRepository = subcategoryRepository;
     }
 
-    // Fetch all subcategories for a category
     public IEnumerable<TicketSubcategory> GetSubcategoriesByCategoryId(int categoryId)
     {
-        return _subcategoryRepo.GetByCategoryId(categoryId);
+        return subcategoryRepository.GetByCategoryId(categoryId);
     }
-    // Optional: fetch a single subcategory by its own ID
     public TicketSubcategory GetSubcategoryById(int subcategoryId)
     {
-        return _subcategoryRepo.GetById(subcategoryId);
+        return subcategoryRepository.GetById(subcategoryId);
     }
-    //public IEnumerable<TicketCategory> GetAllSubcategories()
-    //{
-    //    return _subcategoryRepo.GetAll();
-    //}
+    // public IEnumerable<TicketCategory> GetAllSubcategories()
+    // {
+    //    return _subcategoryRepository.GetAll();
+    // }
 }

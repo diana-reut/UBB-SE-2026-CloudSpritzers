@@ -1,26 +1,28 @@
-﻿using CloudSpritzers1.src.model.ticket;
-using CloudSpritzers1.src.repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CloudSpritzers1.Src.Model.Ticket;
+using CloudSpritzers1.Src.Repository;
+using CloudSpritzers1.Src.Repository.Interfaces;
+using CloudSpritzers1.Src.Service.Interfaces;
 
-public class TicketCategoryService
+public class TicketCategoryService : ITicketCategoryService
 {
-    private readonly TicketCategoryRepository _categoryRepo;
+    private readonly ITicketCategoryRepository categoryRepository;
 
-    public TicketCategoryService(TicketCategoryRepository categoryRepo)
+    public TicketCategoryService(ITicketCategoryRepository categoryRepository)
     {
-        _categoryRepo = categoryRepo;
+        this.categoryRepository = categoryRepository;
     }
 
     public TicketCategory GetCategoryById(int categoryId)
     {
-        return _categoryRepo.GetById(categoryId); 
+        return categoryRepository.GetById(categoryId);
     }
     public IEnumerable<TicketCategory> GetAllCategories()
     {
-        return _categoryRepo.GetAll();
+        return categoryRepository.GetAll();
     }
 }

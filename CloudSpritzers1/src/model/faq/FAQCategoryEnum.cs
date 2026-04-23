@@ -1,4 +1,4 @@
-namespace CloudSpritzers1.src.model.faq
+namespace CloudSpritzers1.Src.Model.Faq
 {
     public enum FAQCategoryEnum
     {

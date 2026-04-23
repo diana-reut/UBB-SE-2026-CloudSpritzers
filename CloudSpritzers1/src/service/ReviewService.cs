@@ -1,51 +1,54 @@
-﻿using CloudSpritzers1.src.model;
-using CloudSpritzers1.src.model.review;
-using CloudSpritzers1.src.repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CloudSpritzers1.Src.Model;
+using CloudSpritzers1.Src.Model.Review;
+using CloudSpritzers1.Src.Repository;
 
-namespace CloudSpritzers1.src.service
+namespace CloudSpritzers1.Src.Service
 {
     public class ReviewService
     {
-        private readonly ReviewRepository _reviewRepository;
+        private readonly IRepository<int, Review> reviewRepository;
 
-        public ReviewService(ReviewRepository reviewRepository)
+        private const int MinRating = 1;
+        private const int MaxRating = 5;
+        private const int NumberOfRatings = 4;
+
+        public ReviewService(IRepository<int, Review> reviewRepository)
         {
-            _reviewRepository = reviewRepository;
+            this.reviewRepository = reviewRepository;
         }
 
         public Review GetById(int id)
         {
-            return _reviewRepository.GetById(id);
+            return reviewRepository.GetById(id);
         }
 
         public int Add(Review review)
         {
-            return _reviewRepository.Add(review);
+            return reviewRepository.CreateNewEntity(review);
         }
 
         public void UpdateById(int id, Review review)
         {
-            _reviewRepository.UpdateById(id, review);
+            reviewRepository.UpdateById(id, review);
         }
 
         public void DeleteById(int id)
         {
-            _reviewRepository.DeleteById(id);
+            reviewRepository.DeleteById(id);
         }
 
-        public List<Review> GetAll()
+        public List<Review>? GetAll()
         {
-            return _reviewRepository.GetAll().ToList();
+            var reviews = reviewRepository.GetAll();
+            return reviews?.ToList();
         }
 
         public void CreateReview(int id, User user, string message, int dutyFreeRating, int flightExperienceRating, int staffFriendlinessRating, int cleanlinessRating)
         {
-            Review review = new(id, user, message, dutyFreeRating, flightExperienceRating, staffFriendlinessRating, cleanlinessRating);
+            Review review = new (id, user, message, dutyFreeRating, flightExperienceRating, staffFriendlinessRating, cleanlinessRating);
             ValidateReview(review);
             Add(review);
         }
@@ -53,22 +56,49 @@ namespace CloudSpritzers1.src.service
         public void ValidateReview(Review review)
         {
             ArgumentNullException.ThrowIfNull(review);
-            if (this.GetAll().Contains(review))
-                throw new ArgumentException("Review already exists");
-            if (review.GetUser() == null)
-                throw new ArgumentException("User cannot be null");
-            if (string.IsNullOrEmpty(review.GetMessage()))
-                throw new ArgumentException("Message cannot be null or empty");
-            if (review.GetDutyFreeRating() < 1 || review.GetDutyFreeRating() > 5)
-                throw new ArgumentException("Duty Free Rating must be between 1 and 5");
-            if (review.GetFlightExperienceRating() < 1 || review.GetFlightExperienceRating() > 5)
-                throw new ArgumentException("Flight Experience Rating must be between 1 and 5");
-            if (review.GetStaffFriendlinessRating() < 1 || review.GetStaffFriendlinessRating() > 5)
-                throw new ArgumentException("Staff Friendliness Rating must be between 1 and 5");
-            if (review.GetCleanlinessRating() < 1 || review.GetCleanlinessRating() > 5)
-                throw new ArgumentException("Cleanliness Rating must be between 1 and 5");
-            // maybe more validation on the user
 
+            if (this.GetAll().Contains(review))
+            {
+                throw new ArgumentException("Review already exists");
+            }
+
+            if (review.GetUser() == null)
+            {
+                throw new ArgumentException("User cannot be null");
+            }
+
+            if (string.IsNullOrEmpty(review.GetMessage()))
+            {
+                throw new ArgumentException("Message cannot be null or empty");
+            }
+
+            if (review.GetDutyFreeRating() < MinRating || review.GetDutyFreeRating() > MaxRating)
+            {
+                throw new ArgumentException($"Duty Free Rating must be between {MinRating} and {MaxRating}");
+            }
+
+            if (review.GetFlightExperienceRating() < MinRating || review.GetFlightExperienceRating() > MaxRating)
+            {
+                throw new ArgumentException($"Flight Experience Rating must be between {MinRating} and {MaxRating}");
+            }
+
+            if (review.GetStaffFriendlinessRating() < MinRating || review.GetStaffFriendlinessRating() > MaxRating)
+            {
+                throw new ArgumentException($"Staff Friendliness Rating must be between {MinRating} and {MaxRating}");
+            }
+
+            if (review.GetCleanlinessRating() < MinRating || review.GetCleanlinessRating() > MaxRating)
+            {
+                throw new ArgumentException($"Cleanliness Rating must be between {MinRating} and {MaxRating}");
+            }
+        }
+
+        public float CalculateAverageRating(Review review)
+        {
+            return (review.GetDutyFreeRating() +
+                    review.GetFlightExperienceRating() +
+                    review.GetStaffFriendlinessRating() +
+                    review.GetCleanlinessRating()) / (float)NumberOfRatings;
         }
     }
 }

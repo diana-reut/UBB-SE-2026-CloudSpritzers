@@ -1,25 +1,25 @@
-﻿using CloudSpritzers1.src.model.ticket;
-using CloudSpritzers1.src.repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CloudSpritzers1.Src.Model.Ticket;
+using CloudSpritzers1.Src.Repository;
 
-namespace CloudSpritzers1.src.dto
+namespace CloudSpritzers1.Src.Dto
 {
     public record TicketDTO(
-        int TicketId, 
-        int UserId, 
-        string UserEmail, 
-        UrgencyLevelEnum UrgencyLevel, 
-        StatusEnum Status, 
-        int CategoryId, 
-        string CategoryName, 
-        int SubcategoryId, 
-        string SubcategoryName, 
-        string Subject, 
-        string Description, 
-        DateTime CreatedAt) 
+        int ticketId,
+        int creatorAccountId,
+        string creatorEmailAddress,
+        TicketUrgencyLevelEnum urgencyLevel,
+        TicketStatusEnum currentStatus,
+        int categoryId,
+        string categoryName,
+        int subcategoryId,
+        string subcategoryName,
+        string subject,
+        string description,
+        DateTime creationTimestamp)
     { }
 }

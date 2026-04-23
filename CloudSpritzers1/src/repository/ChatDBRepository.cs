@@ -1,88 +1,86 @@
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Microsoft.Data;
 using Microsoft.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Configuration;
-using CloudSpritzers1.src.model.chat;
 
-namespace CloudSpritzers1.src.repository
+using CloudSpritzers1.Src.Model.Chats;
+
+namespace CloudSpritzers1.Src.Repository.Database
 {
-	public class ChatDBRepository : DBRepository<int, Chat>, IRepository<int, Chat>
+	public class ChatDatabaseRepository : DatabaseRepository<int, Chat>, IRepository<int, Chat>
 	{
-
         /// <summary>
-        /// Helper method to map a reader row to a Chat object to respect DRY 
+        /// Helper method to map a reader row to a Chat object to respect DRY
         /// </summary>
-        /// <param name="reader"> SqlDataReader </param>
+        /// <param name="sqlDataReaderContainingDatabaseRowData"> SqlDataReader </param>
         /// <returns> Chat object </returns>
-        protected override Chat MapRowToEntity(SqlDataReader reader)
+        protected override Chat MapRowToEntity(SqlDataReader sqlDataReaderContainingDatabaseRowData)
         {
-            int chatId = reader.GetInt32(reader.GetOrdinal("chat_id"));
-            int userId = reader.GetInt32(reader.GetOrdinal("user_id"));
-            string statusStr = reader.GetString(reader.GetOrdinal("status"));
-            ChatStatus status = (ChatStatus)Enum.Parse(typeof(ChatStatus), statusStr);
+            int uniqueDatabaseIdentifierForCurrentChat = sqlDataReaderContainingDatabaseRowData.GetInt32(sqlDataReaderContainingDatabaseRowData.GetOrdinal("chat_id"));
+            int uniqueDatabaseIdentifierForTheUserAssociatedWithThisChat = sqlDataReaderContainingDatabaseRowData.GetInt32(sqlDataReaderContainingDatabaseRowData.GetOrdinal("user_id"));
+            string stringRepresentationOfTheChatStatusRetrievedFromDatabase = sqlDataReaderContainingDatabaseRowData.GetString(sqlDataReaderContainingDatabaseRowData.GetOrdinal("status"));
+            ChatStatus parsedChatStatusEnumerationValue = (ChatStatus)Enum.Parse(typeof(ChatStatus), stringRepresentationOfTheChatStatusRetrievedFromDatabase);
 
-            return new Chat(chatId, userId, status);
+            return new Chat(uniqueDatabaseIdentifierForCurrentChat, uniqueDatabaseIdentifierForTheUserAssociatedWithThisChat, parsedChatStatusEnumerationValue);
         }
 
-        protected override int GetEntityId(Chat entity)
+        protected override int GetEntityId(Chat specificChatEntity)
         {
-            return entity.ChatId;
+            return specificChatEntity.ChatId;
         }
 
-        public int Add(Chat elem)
+        public int CreateNewEntity(Chat incomingChatEntityToBeSaved)
         {
-            string query = "INSERT INTO Chat (user_id, status) " +
+            string sqlQueryStringForInsertingNewChatIntoDatabase = "INSERT INTO Chat (user_id, status) " +
                                "VALUES (@userId, @status); SELECT CAST( SCOPE_IDENTITY() AS INT);";
 
-            var cmd = new SqlCommand(query);
-            cmd.Parameters.AddWithValue("@userId", Convert.ToInt32(elem.UserId));
-            cmd.Parameters.AddWithValue("@status", elem.Status.ToString());
+            var sqlCommandObjectForExecutingInsertQuery = new SqlCommand(sqlQueryStringForInsertingNewChatIntoDatabase);
+            sqlCommandObjectForExecutingInsertQuery.Parameters.AddWithValue("@userId", Convert.ToInt32(incomingChatEntityToBeSaved.UserId));
+            sqlCommandObjectForExecutingInsertQuery.Parameters.AddWithValue("@status", incomingChatEntityToBeSaved.Status.ToString());
 
-            return Add(cmd, elem);
+            return Add(sqlCommandObjectForExecutingInsertQuery, incomingChatEntityToBeSaved);
         }
 
-        public void DeleteById(int id)
+        public void DeleteById(int identifierForChatToBeDeleted)
         {
-            string query = "DELETE FROM Chat WHERE chat_id = @id";
-            var cmd = new SqlCommand(query);
-            cmd.Parameters.AddWithValue("@id", id);
+            string sqlQueryStringForDeletingSpecificChatFromDatabase = "DELETE FROM Chat WHERE chat_id = @id";
+            var sqlCommandObjectForExecutingDeleteQuery = new SqlCommand(sqlQueryStringForDeletingSpecificChatFromDatabase);
+            sqlCommandObjectForExecutingDeleteQuery.Parameters.AddWithValue("@id", identifierForChatToBeDeleted);
 
-            DeleteById(id, cmd); 
+            DeleteById(identifierForChatToBeDeleted, sqlCommandObjectForExecutingDeleteQuery);
         }
 
-        public void UpdateById(int id, Chat chat)
+        public void UpdateById(int identifierForChatToBeUpdated, Chat updatedChatEntityData)
         {
-            string query = "UPDATE Chat SET user_id = @userId, status = @status WHERE chat_id = @id";
-            var cmd = new SqlCommand(query);
-            cmd.Parameters.AddWithValue("@userId", chat.UserId);
-            cmd.Parameters.AddWithValue("@status", chat.Status.ToString());
-            cmd.Parameters.AddWithValue("@id", id);
+            string sqlQueryStringForUpdatingSpecificChatInDatabase = "UPDATE Chat SET user_id = @userId, status = @status WHERE chat_id = @id";
+            var sqlCommandObjectForExecutingUpdateQuery = new SqlCommand(sqlQueryStringForUpdatingSpecificChatInDatabase);
+            sqlCommandObjectForExecutingUpdateQuery.Parameters.AddWithValue("@userId", updatedChatEntityData.UserId);
+            sqlCommandObjectForExecutingUpdateQuery.Parameters.AddWithValue("@status", updatedChatEntityData.Status.ToString());
+            sqlCommandObjectForExecutingUpdateQuery.Parameters.AddWithValue("@id", identifierForChatToBeUpdated);
 
-            UpdateById(id, cmd, chat); 
+            UpdateById(identifierForChatToBeUpdated, sqlCommandObjectForExecutingUpdateQuery, updatedChatEntityData);
         }
 
         public IEnumerable<Chat> GetAll()
         {
-            string query = "SELECT * FROM Chat";
-            var cmd = new SqlCommand(query);
+            string sqlQueryStringForRetrievingAllChatsFromDatabase = "SELECT * FROM Chat";
+            var sqlCommandObjectForExecutingSelectAllQuery = new SqlCommand(sqlQueryStringForRetrievingAllChatsFromDatabase);
 
-            return GetAll(cmd);
+            return GetAll(sqlCommandObjectForExecutingSelectAllQuery);
         }
 
-        public Chat GetById(int id)
+        public Chat GetById(int identifierForRequestedChat)
         {
-            string query = "SELECT * FROM Chat WHERE chat_id = @id";
-            var cmd = new SqlCommand(query);
-            cmd.Parameters.AddWithValue("@id", id);
+            string sqlQueryStringForRetrievingSpecificChatFromDatabase = "SELECT * FROM Chat WHERE chat_id = @id";
+            var sqlCommandObjectForExecutingSelectByIdQuery = new SqlCommand(sqlQueryStringForRetrievingSpecificChatFromDatabase);
+            sqlCommandObjectForExecutingSelectByIdQuery.Parameters.AddWithValue("@id", identifierForRequestedChat);
 
-            return GetById(id, cmd) ?? throw new KeyNotFoundException($"Chat with id {id} not found.");
+            return GetById(identifierForRequestedChat, sqlCommandObjectForExecutingSelectByIdQuery) ?? throw new KeyNotFoundException($"Chat with id {identifierForRequestedChat} not found.");
         }
-
     }
-
 }
