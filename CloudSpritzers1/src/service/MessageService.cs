@@ -5,6 +5,7 @@ using CloudSpritzers1.src.model.chat;
 using CloudSpritzers1.src.model.faq.bot;
 using CloudSpritzers1.src.model.message;
 using CloudSpritzers1.src.repository;
+using CloudSpritzers1.src.repository.database;
 using CloudSpritzers1.src.service.bot;
 
 
@@ -14,13 +15,13 @@ namespace CloudSpritzers1.src.service
 {
     public class MessageService
     {
-        private readonly ChatDBRepository _chatRepository;
-        private readonly MessageDBRepository _messageRepository;
+        private readonly ChatDatabaseRepository _chatRepository;
+        private readonly MessageDatabaseRepository _messageRepository;
         private readonly BotEngine _botEngine;
 
         public MessageService(
-            ChatDBRepository chatRepository,
-            MessageDBRepository messageRepository,
+            ChatDatabaseRepository chatRepository,
+            MessageDatabaseRepository messageRepository,
             BotEngine botEngine)
         {
             _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
@@ -42,18 +43,18 @@ namespace CloudSpritzers1.src.service
 
             if(selectedOption.NextOptionId == 1)
             {
-                _botEngine.ResetToRoot();
+                _botEngine.ResetBotConversationStateToInitialRootNode();
             }
 
             Chat chat = GetActiveChat(chatId);
 
             // 1. Persist the user's option selection using its label as the message text.
             var userMessage = new Message(sender, chat, selectedOption.Label);
-            _messageRepository.Add(userMessage);
+            _messageRepository.CreateNewEntity(userMessage);
 
             // 2. Let the bot produce a response.
             //    The strategy matches selectedOption.Label against the current node's options.
-            BotMessage botReply = _botEngine.Respond(userMessage);
+            BotMessage botReply = _botEngine.GenerateAppropriateResponseBasedOnCurrentStrategy(userMessage);
 
             //if(botReply.GetNextOptions().ToArray().Length == 0)
             //{
@@ -63,7 +64,7 @@ namespace CloudSpritzers1.src.service
             // 3. Persist the bot reply.
             //    BotEngine implements ISender with id = BOT_CANNONIZED_ID (0).
             var botRow = new Message(_botEngine, chat, botReply.GetMessage());
-            _messageRepository.Add(botRow);
+            _messageRepository.CreateNewEntity(botRow);
 
             return botReply;
         }

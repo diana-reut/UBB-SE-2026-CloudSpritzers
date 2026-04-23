@@ -9,8 +9,8 @@ namespace CloudSpritzers1.src.service.bot.strategy
 {
     public interface IBotStrategy
     {
-        BotMessage Process(BotEngine botEngine, IMessage message);
+        BotMessage ProcessIncomingUserMessageAndDetermineNextDecisionTreeNode(BotEngine activeBotEngineInstance, IMessage incomingUserMessage);
 
-        public void ResetToRoot();
+        public void ResetCurrentlyActiveConversationNodeToInitialStartingPoint();
     }
 }

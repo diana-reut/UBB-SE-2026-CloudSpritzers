@@ -11,8 +11,8 @@ namespace CloudSpritzers1.src.dto
         public string Answer { get; set; }
         public FAQCategoryEnum Category { get; set; }
         public int ViewCount { get; set; }
-        public int WasHelpfulVotes { get; set; }
-        public int WasNotHelpfulVotes { get; set; }
+        public int HelpfulVotesCount { get; set; }
+        public int NotHelpfulVotesCount { get; set; }
 
         private bool _isExpanded;
         public bool IsExpanded
@@ -42,8 +42,8 @@ namespace CloudSpritzers1.src.dto
             Answer = answer;
             Category = category;
             ViewCount = viewCount;
-            WasHelpfulVotes = wasHelpfulVotes;
-            WasNotHelpfulVotes = wasNotHelpfulVotes;
+            HelpfulVotesCount = wasHelpfulVotes;
+            NotHelpfulVotesCount = wasNotHelpfulVotes;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

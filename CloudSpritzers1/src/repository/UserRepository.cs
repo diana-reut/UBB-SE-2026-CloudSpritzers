@@ -1,5 +1,7 @@
 ﻿using CloudSpritzers1.src.model;
+using CloudSpritzers1.src.repository.interfaces;
 using Microsoft.Data.SqlClient;
+using CloudSpritzers1.src.repository.database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,89 +10,93 @@ using System.Threading.Tasks;
 
 namespace CloudSpritzers1.src.repository
 {
-    public class UserRepository : DBRepository<int, User>, IRepository<int, User>
+    public class UserRepository : DatabaseRepository<int, User>, IRepository<int, User>, IUserRepository
     {
-        public int Add(User elem)
+        public int CreateNewEntity(User userEntity)
         {
-            if (elem == null)
-                throw new ArgumentNullException(nameof(elem), "User cannot be null.");
+            if (userEntity == null)
+                throw new ArgumentNullException(nameof(userEntity), "User cannot be null.");
 
-            string query = "INSERT INTO [User] " +
+            string insertQuery = "INSERT INTO [User] " +
                 "(name, email) " +
                 "OUTPUT INSERTED.user_id " +
                 "VALUES (@name, @email)";
 
-            SqlCommand command = new SqlCommand(query);
+            SqlCommand sqlCommand = new SqlCommand(insertQuery);
 
-            command.Parameters.AddWithValue("@name", elem.GetName());
-            command.Parameters.AddWithValue("@email", elem.GetEmail());
 
-            int id = base.Add(command, elem);
-            return id;
+            sqlCommand.Parameters.AddWithValue("@name", userEntity.RetrieveConfiguredDisplayFullNameForBot());
+            sqlCommand.Parameters.AddWithValue("@email", userEntity.RetrieveConfiguredEmailAddressForBotContact());
+
+
+            int generatedIdentificationNumber = base.Add(sqlCommand, userEntity);
+            return generatedIdentificationNumber;
         }
 
-        public void DeleteById(int id)
+        public void DeleteById(int identificationNumber)
         {
-            string query = "DELETE FROM [User] WHERE user_id = @id";
-            SqlCommand command = new SqlCommand(query);
-            command.Parameters.AddWithValue("@id", id);
+            string deleteQuery = "DELETE FROM [User] WHERE user_id = @id";
+            SqlCommand sqlCommand = new SqlCommand(deleteQuery);
+            sqlCommand.Parameters.AddWithValue("@id", identificationNumber);
 
-            base.DeleteById(id, command);
+            base.DeleteById(identificationNumber, sqlCommand);
         }
 
         public IEnumerable<User> GetAll()
         {
-            string query = "SELECT * FROM [User]";
-            SqlCommand command = new SqlCommand(query);
+            string selectAllQuery = "SELECT * FROM [User]";
+            SqlCommand command = new SqlCommand(selectAllQuery);
             return base.GetAll(command);
         }
 
-        public User GetById(int id)
+        public User GetById(int identificationNumber)
         {
-            string query = "SELECT * FROM [User] WHERE user_id = @id";
-            SqlCommand command = new SqlCommand(query);
-            command.Parameters.AddWithValue("@id", id);
+            string selectByIdQuery = "SELECT * FROM [User] WHERE user_id = @id";
+            SqlCommand sqlCommand = new SqlCommand(selectByIdQuery);
+            sqlCommand.Parameters.AddWithValue("@id", identificationNumber);
 
-            User user = base.GetById(id, command);
+            User foundUser = base.GetById(identificationNumber, sqlCommand);
 
-            if (user == null)
-                throw new KeyNotFoundException($"User with id {id} was not found.");
+            if (foundUser == null)
+                throw new KeyNotFoundException($"User with id {identificationNumber} was not found.");
 
-            return user;
+            return foundUser;
         }
 
-        public void UpdateById(int id, User elem)
+        public void UpdateById(int identificationNumber, User userEntity)
         {
-            if (elem == null)
-                throw new ArgumentNullException(nameof(elem), "User cannot be null.");
+            if (userEntity == null)
+                throw new ArgumentNullException(nameof(userEntity), "User cannot be null.");
 
-            string query = "UPDATE [User] SET " +
+            string updateQuery = "UPDATE [User] SET " +
                 "name = @name, " +
                 "email = @email " +
                 "WHERE user_id = @id";
 
-            SqlCommand command = new SqlCommand(query);
+            SqlCommand sqlCommand = new SqlCommand(updateQuery);
 
-            command.Parameters.AddWithValue("@id", id);
-            command.Parameters.AddWithValue("@name", elem.GetName());
-            command.Parameters.AddWithValue("@email", elem.GetEmail());
+
+            sqlCommand.Parameters.AddWithValue("@id", identificationNumber);
+            sqlCommand.Parameters.AddWithValue("@name", userEntity.RetrieveConfiguredDisplayFullNameForBot());
+            sqlCommand.Parameters.AddWithValue("@email", userEntity.RetrieveConfiguredEmailAddressForBotContact());
+
             
 
-            base.UpdateById(id, command, elem);
+            base.UpdateById(identificationNumber, sqlCommand, userEntity);
         }
 
-        protected override int GetEntityId(User entity)
+        protected override int GetEntityId(User userEntity)
         {
-            return entity.UserId;
+            return userEntity.UserId;
         }
 
-        protected override User MapRowToEntity(SqlDataReader reader)
+        protected override User MapRowToEntity(SqlDataReader sqlDataReader)
         {
-            int userId = reader.GetInt32(reader.GetOrdinal("user_id"));
-            string name = reader.GetString(reader.GetOrdinal("name"));
-            string email = reader.GetString(reader.GetOrdinal("email"));
+            int userIdentificationNumber = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("user_id"));
+            string userFullName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("name"));
+            string userEmailAddress = sqlDataReader.GetString(sqlDataReader.GetOrdinal("email"));
 
-            return new User(userId, name, email);
+            return new User(userIdentificationNumber, userFullName, userEmailAddress);
         }
     }
 }

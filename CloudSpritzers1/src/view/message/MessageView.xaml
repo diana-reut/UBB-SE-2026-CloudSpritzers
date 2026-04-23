@@ -16,30 +16,30 @@
     <Border x:Name="BubbleBorder"
             Style="{StaticResource CardStyle}"
             MaxWidth="400"
-            HorizontalAlignment="{x:Bind ViewModel.IsOutgoing, Converter={StaticResource AlignConverter}, Mode=OneWay}"
+            HorizontalAlignment="{x:Bind DataTransferObjectContainingMessageDetailsForViewModelBinding.IsOutgoing, Converter={StaticResource AlignConverter}, Mode=OneWay}"
             BorderBrush="{ThemeResource BorderBrush}"
             BorderThickness="1">
         <StackPanel>
             <TextBlock x:Name="SenderLabel"
-                       Text="{x:Bind ViewModel.SenderName}"
+                       Text="{x:Bind DataTransferObjectContainingMessageDetailsForViewModelBinding.SenderName}"
                        FontSize="14"
                        FontWeight="SemiBold"
                        Foreground="{StaticResource PrimaryBrush}"
                        Visibility="Visible" />
             <TextBlock x:Name="MessageTextBlock"
-                       Text="{x:Bind ViewModel.MessageText}"
+                       Text="{x:Bind DataTransferObjectContainingMessageDetailsForViewModelBinding.MessageText}"
                        FontSize="11"
                        TextWrapping="Wrap"
                        Foreground="{StaticResource PrimaryTextColor}"
                        Margin="0,4" />
             <TextBlock x:Name="TimestampLabel"
-                       Text="{x:Bind ViewModel.Timestamp, Converter={StaticResource DateConverter}, Mode=OneWay}"
+                       Text="{x:Bind DataTransferObjectContainingMessageDetailsForViewModelBinding.Timestamp, Converter={StaticResource DateConverter}, Mode=OneWay}"
                        Style="{StaticResource SubtitleTextStyle}"
                        FontSize="10"
                        Margin="0,5,0,0"
                        HorizontalAlignment="Right"/>
         </StackPanel>
     </Border>
-    
-    
+
+
 </UserControl>

@@ -154,7 +154,7 @@
                             </StackPanel>
 
                             <Button Grid.Column="2"
-                            Click="OnClick"
+                            Click="NavigateToTicketsView_Click"
                             Content="Get help"
                             Background="{ThemeResource PrimaryBrush}"
                             Foreground="White"

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CloudSpritzers1.src.repository.database
 {
-    public class SqlConnectionException : Exception
+    public class DatabaseConnectionException : Exception
     {
-        public SqlConnectionException(string message) : base(message)
+        public DatabaseConnectionException(string message) : base(message)
         { }
     }
 }

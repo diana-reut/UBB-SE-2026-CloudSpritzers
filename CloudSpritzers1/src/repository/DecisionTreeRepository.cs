@@ -4,179 +4,179 @@ using System.Linq;
 using CloudSpritzers1.src.model.faq.bot;
 using Microsoft.Data.SqlClient;
 
-namespace CloudSpritzers1.src.repository
+namespace CloudSpritzers1.src.repository.database
 {
-    public class DecisionTreeRepository : DBRepository<int, FAQNode>, IRepository<int, FAQNode>
+    public class DecisionTreeRepository : DatabaseRepository<int, FAQNode>, IRepository<int, FAQNode>
     {
-        private ImmutableArray<FAQOption> LoadOptions(int nodeId)
+        private ImmutableArray<FAQOption> RetrieveAllAvailableFAQOptionsAssociatedWithSpecificDecisionNodeFromDatabase(int uniqueDatabaseIdentifierForTargetDecisionNode)
         {
-            using var conn = CreateConnection();
-            conn.Open();
+            using var activeDatabaseConnectionForExecutingCurrentQuery = CreateConnection();
+            activeDatabaseConnectionForExecutingCurrentQuery.Open();
 
-            using var cmd = new SqlCommand(
-                "SELECT label, next_option_id FROM FAQOption WHERE node_id = @NodeId", conn);
-            cmd.Parameters.AddWithValue("@NodeId", nodeId);
+            using var sqlCommandObjectForRetrievingOptions = new SqlCommand(
+                "SELECT label, next_option_id FROM FAQOption WHERE node_id = @NodeId", activeDatabaseConnectionForExecutingCurrentQuery);
+            sqlCommandObjectForRetrievingOptions.Parameters.AddWithValue("@NodeId", uniqueDatabaseIdentifierForTargetDecisionNode);
 
-            using var reader = cmd.ExecuteReader();
-            var options = new List<FAQOption>();
-            while (reader.Read())
+            using var sqlDataReaderForParsingReturnedDatabaseRows = sqlCommandObjectForRetrievingOptions.ExecuteReader();
+            var listOfRetrievedFAQOptionsForCurrentNode = new List<FAQOption>();
+            while (sqlDataReaderForParsingReturnedDatabaseRows.Read())
             {
-                options.Add(new FAQOption(
-                    reader.GetString(reader.GetOrdinal("label")),
-                    reader.GetInt32(reader.GetOrdinal("next_option_id"))
+                listOfRetrievedFAQOptionsForCurrentNode.Add(new FAQOption(
+                    sqlDataReaderForParsingReturnedDatabaseRows.GetString(sqlDataReaderForParsingReturnedDatabaseRows.GetOrdinal("label")),
+                    sqlDataReaderForParsingReturnedDatabaseRows.GetInt32(sqlDataReaderForParsingReturnedDatabaseRows.GetOrdinal("next_option_id"))
                 ));
             }
-            return options.ToImmutableArray();
+            return listOfRetrievedFAQOptionsForCurrentNode.ToImmutableArray();
         }
 
-        private Dictionary<int, ImmutableArray<FAQOption>> LoadAllOptions()
+        private Dictionary<int, ImmutableArray<FAQOption>> RetrieveAndGroupAllFAQOptionsAvailableInTheEntireDatabase()
         {
-            using var conn = CreateConnection();
-            conn.Open();
+            using var activeDatabaseConnectionForExecutingCurrentQuery = CreateConnection();
+            activeDatabaseConnectionForExecutingCurrentQuery.Open();
 
-            using var cmd = new SqlCommand(
-                "SELECT node_id, label, next_option_id FROM FAQOption", conn);
+            using var sqlCommandObjectForRetrievingAllOptions = new SqlCommand(
+                "SELECT node_id, label, next_option_id FROM FAQOption", activeDatabaseConnectionForExecutingCurrentQuery);
 
-            using var reader = cmd.ExecuteReader();
-            var grouped = new Dictionary<int, List<FAQOption>>();
+            using var sqlDataReaderForParsingReturnedDatabaseRows = sqlCommandObjectForRetrievingAllOptions.ExecuteReader();
+            var dictionaryMappingNodeIdentifiersToTheirRespectiveFAQOptions = new Dictionary<int, List<FAQOption>>();
 
-            while (reader.Read())
+            while (sqlDataReaderForParsingReturnedDatabaseRows.Read())
             {
-                int nodeId = reader.GetInt32(reader.GetOrdinal("node_id"));
-                var option = new FAQOption(
-                    reader.GetString(reader.GetOrdinal("label")),
-                    reader.GetInt32(reader.GetOrdinal("next_option_id"))
+                int uniqueDatabaseIdentifierForCurrentFAQNode = sqlDataReaderForParsingReturnedDatabaseRows.GetInt32(sqlDataReaderForParsingReturnedDatabaseRows.GetOrdinal("node_id"));
+                var currentlyIteratedFAQOptionFromDatabase = new FAQOption(
+                    sqlDataReaderForParsingReturnedDatabaseRows.GetString(sqlDataReaderForParsingReturnedDatabaseRows.GetOrdinal("label")),
+                    sqlDataReaderForParsingReturnedDatabaseRows.GetInt32(sqlDataReaderForParsingReturnedDatabaseRows.GetOrdinal("next_option_id"))
                 );
 
-                if (!grouped.ContainsKey(nodeId))
-                    grouped[nodeId] = new List<FAQOption>();
+                if (!dictionaryMappingNodeIdentifiersToTheirRespectiveFAQOptions.ContainsKey(uniqueDatabaseIdentifierForCurrentFAQNode))
+                    dictionaryMappingNodeIdentifiersToTheirRespectiveFAQOptions[uniqueDatabaseIdentifierForCurrentFAQNode] = new List<FAQOption>();
 
-                grouped[nodeId].Add(option);
+                dictionaryMappingNodeIdentifiersToTheirRespectiveFAQOptions[uniqueDatabaseIdentifierForCurrentFAQNode].Add(currentlyIteratedFAQOptionFromDatabase);
             }
 
-            return grouped.ToDictionary(
-                kvp => kvp.Key,
-                kvp => kvp.Value.ToImmutableArray()
+            return dictionaryMappingNodeIdentifiersToTheirRespectiveFAQOptions.ToDictionary(
+                keyValuePairHoldingNodeIdAndOptionList => keyValuePairHoldingNodeIdAndOptionList.Key,
+                keyValuePairHoldingNodeIdAndOptionList => keyValuePairHoldingNodeIdAndOptionList.Value.ToImmutableArray()
             );
         }
 
         public FAQNode GetById(int id)
         {
-            using var cmd = new SqlCommand(
+            using var sqlCommandObjectForRetrievingSpecificFAQNode = new SqlCommand(
                 "SELECT node_id, question_text, is_final_answer FROM FAQNode WHERE node_id = @Id");
-            cmd.Parameters.AddWithValue("@Id", id);
+            sqlCommandObjectForRetrievingSpecificFAQNode.Parameters.AddWithValue("@Id", id);
 
            
-            var node = base.GetById(id, cmd);
-            if (node == null) return null;
+            var retrievedFAQNodeEntityFromBaseRepository = base.GetById(id, sqlCommandObjectForRetrievingSpecificFAQNode);
+            if (retrievedFAQNodeEntityFromBaseRepository == null) return null;
 
-            var options = LoadOptions(id);
-            return node with { Options = options };
+            var immutableArrayOfOptionsForThisNode = RetrieveAllAvailableFAQOptionsAssociatedWithSpecificDecisionNodeFromDatabase(id);
+            return retrievedFAQNodeEntityFromBaseRepository with { Options = immutableArrayOfOptionsForThisNode };
         }
 
-        public int Add(FAQNode elem)
+        public int CreateNewEntity(FAQNode incomingFAQNodeEntityToBeSaved)
         {
-            using var addSqlCommand = new SqlCommand(@"
+            using var sqlCommandForInsertingNewFAQNodeIntoDatabase = new SqlCommand(@"
                 INSERT INTO FAQNode (question_text, is_final_answer)
                 OUTPUT INSERTED.node_id
                 VALUES (@QuestionText, @IsFinalAnswer)");
 
-            addSqlCommand.Parameters.AddWithValue("@QuestionText", elem.QuestionText);
-            addSqlCommand.Parameters.AddWithValue("@IsFinalAnswer", elem.IsFinalAnswer);
+            sqlCommandForInsertingNewFAQNodeIntoDatabase.Parameters.AddWithValue("@QuestionText", incomingFAQNodeEntityToBeSaved.QuestionText);
+            sqlCommandForInsertingNewFAQNodeIntoDatabase.Parameters.AddWithValue("@IsFinalAnswer", incomingFAQNodeEntityToBeSaved.IsFinalAnswer);
 
-            int newId = base.Add(addSqlCommand, elem);
+            int newlyGeneratedDatabaseIdentifierForCreatedFAQNode = base.Add(sqlCommandForInsertingNewFAQNodeIntoDatabase, incomingFAQNodeEntityToBeSaved);
 
-            foreach (var option in elem.Options)
+            foreach (var currentlyIteratedFAQOptionToInsert in incomingFAQNodeEntityToBeSaved.Options)
             {
-                using var optCmd = new SqlCommand(@"
+                using var sqlCommandForInsertingNewFAQOptionIntoDatabase = new SqlCommand(@"
                     INSERT INTO FAQOption (node_id, label, next_option_id)
                     VALUES (@NodeId, @Label, @NextOptionId)");
 
-                optCmd.Parameters.AddWithValue("@NodeId", newId);
-                optCmd.Parameters.AddWithValue("@Label", option.Label);
-                optCmd.Parameters.AddWithValue("@NextOptionId", option.NextOptionId);
+                sqlCommandForInsertingNewFAQOptionIntoDatabase.Parameters.AddWithValue("@NodeId", newlyGeneratedDatabaseIdentifierForCreatedFAQNode);
+                sqlCommandForInsertingNewFAQOptionIntoDatabase.Parameters.AddWithValue("@Label", currentlyIteratedFAQOptionToInsert.Label);
+                sqlCommandForInsertingNewFAQOptionIntoDatabase.Parameters.AddWithValue("@NextOptionId", currentlyIteratedFAQOptionToInsert.NextOptionId);
 
-                base.ExecuteNonQuery(optCmd);
+                base.ExecuteNonQuery(sqlCommandForInsertingNewFAQOptionIntoDatabase);
             }
 
-            return newId;
+            return newlyGeneratedDatabaseIdentifierForCreatedFAQNode;
         }
 
-        public void DeleteById(int id)
+        public void DeleteById(int identifierForFAQNodeToBeDeleted)
         {
-            using var deleteOptions = new SqlCommand(
+            using var sqlCommandForRemovingAllFAQOptionsAssociatedWithNode = new SqlCommand(
                 "DELETE FROM FAQOption WHERE node_id = @Id");
-            deleteOptions.Parameters.AddWithValue("@Id", id);
-            base.ExecuteNonQuery(deleteOptions);
+            sqlCommandForRemovingAllFAQOptionsAssociatedWithNode.Parameters.AddWithValue("@Id", identifierForFAQNodeToBeDeleted);
+            base.ExecuteNonQuery(sqlCommandForRemovingAllFAQOptionsAssociatedWithNode);
 
-            using var deleteNode = new SqlCommand(
+            using var sqlCommandForRemovingSpecificFAQNodeFromDatabase = new SqlCommand(
                 "DELETE FROM FAQNode WHERE node_id = @Id");
-            deleteNode.Parameters.AddWithValue("@Id", id);
-            base.DeleteById(id, deleteNode);
+            sqlCommandForRemovingSpecificFAQNodeFromDatabase.Parameters.AddWithValue("@Id", identifierForFAQNodeToBeDeleted);
+            base.DeleteById(identifierForFAQNodeToBeDeleted, sqlCommandForRemovingSpecificFAQNodeFromDatabase);
         }
 
-        public void UpdateById(int id, FAQNode elem)
+        public void UpdateById(int identifierForFAQNodeToBeUpdated, FAQNode updatedFAQNodeEntityData)
         {
-            using var updateByIdSqlCommand = new SqlCommand(@"
+            using var sqlCommandForUpdatingSpecificFAQNodeInDatabase = new SqlCommand(@"
                 UPDATE FAQNode
                 SET question_text = @QuestionText,
                     is_final_answer = @IsFinalAnswer
                 WHERE node_id = @Id");
 
-            updateByIdSqlCommand.Parameters.AddWithValue("@Id", id);
-            updateByIdSqlCommand.Parameters.AddWithValue("@QuestionText", elem.QuestionText);
-            updateByIdSqlCommand.Parameters.AddWithValue("@IsFinalAnswer", elem.IsFinalAnswer);
+            sqlCommandForUpdatingSpecificFAQNodeInDatabase.Parameters.AddWithValue("@Id", identifierForFAQNodeToBeUpdated);
+            sqlCommandForUpdatingSpecificFAQNodeInDatabase.Parameters.AddWithValue("@QuestionText", updatedFAQNodeEntityData.QuestionText);
+            sqlCommandForUpdatingSpecificFAQNodeInDatabase.Parameters.AddWithValue("@IsFinalAnswer", updatedFAQNodeEntityData.IsFinalAnswer);
 
-            base.UpdateById(id, updateByIdSqlCommand, elem);
+            base.UpdateById(identifierForFAQNodeToBeUpdated, sqlCommandForUpdatingSpecificFAQNodeInDatabase, updatedFAQNodeEntityData);
 
-            using var deleteOptions = new SqlCommand(
+            using var sqlCommandForRemovingAllOldFAQOptionsAssociatedWithNode = new SqlCommand(
                 "DELETE FROM FAQOption WHERE node_id = @Id");
-            deleteOptions.Parameters.AddWithValue("@Id", id);
-            base.ExecuteNonQuery(deleteOptions);
+            sqlCommandForRemovingAllOldFAQOptionsAssociatedWithNode.Parameters.AddWithValue("@Id", identifierForFAQNodeToBeUpdated);
+            base.ExecuteNonQuery(sqlCommandForRemovingAllOldFAQOptionsAssociatedWithNode);
 
-            foreach (var option in elem.Options)
+            foreach (var currentlyIteratedFAQOptionToInsertAsReplacement in updatedFAQNodeEntityData.Options)
             {
-                using var optionSqlCommand = new SqlCommand(@"
+                using var sqlCommandForInsertingReplacementFAQOptionIntoDatabase = new SqlCommand(@"
                     INSERT INTO FAQOption (node_id, label, next_option_id)
                     VALUES (@NodeId, @Label, @NextOptionId)");
 
-                optionSqlCommand.Parameters.AddWithValue("@NodeId", id);
-                optionSqlCommand.Parameters.AddWithValue("@Label", option.Label);
-                optionSqlCommand.Parameters.AddWithValue("@NextOptionId", option.NextOptionId);
+                sqlCommandForInsertingReplacementFAQOptionIntoDatabase.Parameters.AddWithValue("@NodeId", identifierForFAQNodeToBeUpdated);
+                sqlCommandForInsertingReplacementFAQOptionIntoDatabase.Parameters.AddWithValue("@Label", currentlyIteratedFAQOptionToInsertAsReplacement.Label);
+                sqlCommandForInsertingReplacementFAQOptionIntoDatabase.Parameters.AddWithValue("@NextOptionId", currentlyIteratedFAQOptionToInsertAsReplacement.NextOptionId);
 
-                base.ExecuteNonQuery(optionSqlCommand);
+                base.ExecuteNonQuery(sqlCommandForInsertingReplacementFAQOptionIntoDatabase);
             }
         }
 
         public IEnumerable<FAQNode> GetAll()
         {
-            using var getAllSqlCommand = new SqlCommand(
+            using var sqlCommandForRetrievingAllFAQNodesFromDatabase = new SqlCommand(
                 "SELECT node_id, question_text, is_final_answer FROM FAQNode");
 
-            var nodes = base.GetAll(getAllSqlCommand).ToList();
+            var listOfAllRetrievedFAQNodesFromDatabase = base.GetAll(sqlCommandForRetrievingAllFAQNodesFromDatabase).ToList();
 
-            var allOptions = LoadAllOptions();
+            var comprehensiveDictionaryOfAllFAQOptionsMappedByNodeId = RetrieveAndGroupAllFAQOptionsAvailableInTheEntireDatabase();
 
-            return nodes.Select(node =>
-                node with
+            return listOfAllRetrievedFAQNodesFromDatabase.Select(currentlyIteratedFAQNode =>
+                currentlyIteratedFAQNode with
                 {
-                    Options = allOptions.TryGetValue(node.FaqNodeId, out var options)
-                        ? options
+                    Options = comprehensiveDictionaryOfAllFAQOptionsMappedByNodeId.TryGetValue(currentlyIteratedFAQNode.FaqNodeId, out var correspondingOptionsForThisNode)
+                        ? correspondingOptionsForThisNode
                         : ImmutableArray<FAQOption>.Empty
                 }
             ).ToList();
         }
 
-        protected override FAQNode MapRowToEntity(SqlDataReader reader)
+        protected override FAQNode MapRowToEntity(SqlDataReader sqlDataReaderContainingDatabaseRowData)
         {
             return new FAQNode(
-                reader.GetInt32(reader.GetOrdinal("node_id")),
-                reader.GetString(reader.GetOrdinal("question_text")),
+                sqlDataReaderContainingDatabaseRowData.GetInt32(sqlDataReaderContainingDatabaseRowData.GetOrdinal("node_id")),
+                sqlDataReaderContainingDatabaseRowData.GetString(sqlDataReaderContainingDatabaseRowData.GetOrdinal("question_text")),
                 new ImmutableArray<FAQOption>(),
-                reader.GetBoolean(reader.GetOrdinal("is_final_answer"))
+                sqlDataReaderContainingDatabaseRowData.GetBoolean(sqlDataReaderContainingDatabaseRowData.GetOrdinal("is_final_answer"))
             );
         }
 
-        protected override int GetEntityId(FAQNode entity) => entity.FaqNodeId;
+        protected override int GetEntityId(FAQNode specificFAQNodeEntity) => specificFAQNodeEntity.FaqNodeId;
     }
 }

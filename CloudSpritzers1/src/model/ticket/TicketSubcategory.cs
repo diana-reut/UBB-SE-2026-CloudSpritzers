@@ -10,15 +10,15 @@ namespace CloudSpritzers1.src.model.ticket
     {
         public int SubcategoryId { get; }
         public string SubcategoryName { get; }
-        public int ExternalId { get; }
-        public TicketCategory Category { get; }
+        public int SubcategoryExternalReferenceId { get; }
+        public TicketCategory ParentCategory { get; }
 
-        public TicketSubcategory(int subcategoryId, string subcategoryName, int externalId, TicketCategory category)
+        public TicketSubcategory(int subcategoryId, string subcategoryName, int externalId, TicketCategory parentCategory)
         {
             SubcategoryId = subcategoryId;
             SubcategoryName = subcategoryName;
-            ExternalId = externalId;
-            Category = category;
+            SubcategoryExternalReferenceId = externalId;
+            ParentCategory = parentCategory;
         }
     }
 }

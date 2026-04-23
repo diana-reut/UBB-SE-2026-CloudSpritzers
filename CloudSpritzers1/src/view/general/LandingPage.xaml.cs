@@ -16,30 +16,24 @@ namespace CloudSpritzers1.src.view.general
         {
 
             ViewModel = (App.Current as App).Services.GetService<LandingViewModel>();
-            InitializeComponent();
+            this.InitializeComponent();
+            this.DataContext = ViewModel;
             StartCarousel();
+            this.Loaded += (s, e) => ViewModel.LoadReviews();
         }
 
         private void StartCarousel()
         {
-            _carouselTimer = new DispatcherTimer();
             _carouselTimer.Interval = TimeSpan.FromSeconds(2);
-            _carouselTimer.Tick += CarouselTimer_Tick;
+            _carouselTimer.Tick += OnCarouselTick;
             _carouselTimer.Start();
         }
 
-        private void CarouselTimer_Tick(object? sender, object e)
+        private void OnCarouselTick(object? sender, object e)
         {
-            if (SupportCarousel.Items.Count == 0)
-                return;
+            if (SupportCarousel.Items.Count <= 1) return;
 
-            int nextIndex = SupportCarousel.SelectedIndex + 1;
-
-            if (nextIndex >= SupportCarousel.Items.Count)
-            {
-                nextIndex = 0;
-            }
-
+            int nextIndex = (SupportCarousel.SelectedIndex + 1) % SupportCarousel.Items.Count;
             SupportCarousel.SelectedIndex = nextIndex;
         }
     }

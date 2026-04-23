@@ -13,38 +13,38 @@ namespace CloudSpritzers1.src.service.bot
 {
     public class BotEngine : ISender
     {
-        public const int BOT_CANNONIZED_ID = 0;
-        private IBotStrategy _responseStrategy;
+        public const int CONSTANT_IDENTIFIER_FOR_DEFAULT_BOT_SYSTEM_USER = 0; // ChatBot is always identified as the first 
+        private IBotStrategy _activeStrategyForFormulatingBotResponses;
 
         public BotEngine(IBotStrategy responseStrategy)
         {
-            this._responseStrategy = responseStrategy;
+            this._activeStrategyForFormulatingBotResponses = responseStrategy;
         }
 
 
-        public BotMessage Respond(IMessage message)
+        public BotMessage GenerateAppropriateResponseBasedOnCurrentStrategy(IMessage message)
         {
-            return _responseStrategy.Process(this, message);
+            return _activeStrategyForFormulatingBotResponses.ProcessIncomingUserMessageAndDetermineNextDecisionTreeNode(this, message);
         }
         
-        public string GetEmail()
+        public string RetrieveConfiguredEmailAddressForBotContact()
         {
             return "customer-support@cloudspritzers.com";
         }
 
-        public string GetName()
+        public string RetrieveConfiguredDisplayFullNameForBot()
         {
             return "Carlos";
         }
 
-        public int GetId()
+        public int RetrieveUniqueDatabaseIdentifierForBot()
         {
-            return 0; // ChatBot is always identified as the first 
+            return CONSTANT_IDENTIFIER_FOR_DEFAULT_BOT_SYSTEM_USER; 
         }
 
-        public void ResetToRoot()
+        public void ResetBotConversationStateToInitialRootNode()
         {
-            _responseStrategy.ResetToRoot();
+            _activeStrategyForFormulatingBotResponses.ResetCurrentlyActiveConversationNodeToInitialStartingPoint();
         }
     }
 }

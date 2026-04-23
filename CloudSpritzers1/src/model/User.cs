@@ -5,21 +5,21 @@ namespace CloudSpritzers1.src.model
     public class User : ISender
     {
         private int _userId;
-        private string _name;
-        private string _email;
+        private string _fullName;
+        private string _emailAddress;
 
-        public User(int userId, string name, string email)
+        public User(int userId, string fullName, string emailAddress)
         {
             _userId = userId;
-            _name = name;
-            _email = email;
+            _fullName = fullName;
+            _emailAddress = emailAddress;
         }
 
         public int UserId => _userId;
 
-        public string GetName() => _name;
-        public string GetEmail() => _email;
+        public string RetrieveConfiguredDisplayFullNameForBot() => _fullName;
+        public string RetrieveConfiguredEmailAddressForBotContact() => _emailAddress;
 
-        public int GetId() => _userId;
+        public int RetrieveUniqueDatabaseIdentifierForBot() => _userId;
     }
 }

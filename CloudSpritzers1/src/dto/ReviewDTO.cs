@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CloudSpritzers1.src.dto
 {
     public record ReviewDTO(
-        int id,
+        int reviewId,
         int userId,
         string userName,
         string message,

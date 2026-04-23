@@ -13,7 +13,6 @@ namespace CloudSpritzers1.src.dto.mappingProfiles
     {
         public UserMappingProfile()
         {
-            System.Diagnostics.Debug.WriteLine("UserMappingProfile Loaded!");
             CreateMap<User, UserDTO>();
         }
     }

@@ -18,6 +18,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Template">
                 <Setter.Value>
+                    
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Root"
                                 Background="{TemplateBinding Background}"
@@ -119,7 +120,7 @@
                                 </Grid>
                             </Grid>
 
-                            <ItemsControl Grid.Row="1" x:Name="TicketList" ItemsSource="{x:Bind ViewModel.TicketsRead, Mode=OneWay}" Margin="0,24,0,0">
+                            <ItemsControl Grid.Row="1" x:Name="TicketList" ItemsSource="{x:Bind ViewModel.FilteredTicketsForDisplay, Mode=OneWay}" Margin="0,24,0,0">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="dto:TicketDTO">
                                         <Border Background="{ThemeResource CardBackgroundBrush}" 
@@ -136,23 +137,23 @@
 
                                                 <StackPanel Spacing="8">
                                                     <TextBlock Text="{x:Bind TicketId}" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}"/>
-                                                    <TextBlock Text="Lost Gold Suitcase" FontSize="18" FontWeight="Bold" Foreground="{ThemeResource PrimaryTextBrush}"/>
-                                                    <TextBlock Text="My suitcase didn't arrive on flight RO123." Foreground="{ThemeResource SecondaryTextBrush}" Margin="0,4,0,8"/>
+                                                    <TextBlock Text="{x:Bind Subject}" FontSize="18" FontWeight="Bold" Foreground="{ThemeResource PrimaryTextBrush}"/>
+                                                    <TextBlock Text="{x:Bind Description}" Foreground="{ThemeResource SecondaryTextBrush}" Margin="0,4,0,8"/>
 
                                                     <StackPanel Orientation="Horizontal" Spacing="10">
                                                         <TextBlock Text="{Binding CategoryName, ConverterParameter='Category: {0}', Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}"/>
                                                         <TextBlock Text="|" Foreground="{ThemeResource SecondaryTextBrush}"/>
-                                                        <TextBlock Text="{x:Bind SubcategoryName}" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}"/>
+                                                        <TextBlock Text= "{x:Bind SubcategoryName}" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}"/>
                                                         <TextBlock Text="|" Foreground="{ThemeResource SecondaryTextBrush}"/>
-                                                        <TextBlock Text="Created: 03.04.2026" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}"/>
+                                                        <TextBlock Text= "{x:Bind CreationTimestamp}" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}"/>
                                                         <TextBlock Text="|" Foreground="{ThemeResource SecondaryTextBrush}"/>
-                                                        <TextBlock Text="{x:Bind UserEmail}" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}"/>
+                                                        <TextBlock Text="{x:Bind CreatorEmailAddress}" FontSize="12" Foreground="{ThemeResource SecondaryTextBrush}"/>
                                                     </StackPanel>
                                                 </StackPanel>
 
                                                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Spacing="8">
                                                     <Border Background="#eef2ff" Padding="8,4" CornerRadius="4">
-                                                        <TextBlock Text="{x:Bind Status}" Foreground="#4f46e5" FontSize="12" FontWeight="SemiBold"/>
+                                                        <TextBlock Text="{x:Bind CurrentStatus}" Foreground="#4f46e5" FontSize="12" FontWeight="SemiBold"/>
                                                     </Border>
                                                     <Border Background="#fef2f2" Padding="8,4" CornerRadius="4">
                                                         <TextBlock Text="{x:Bind UrgencyLevel}" Foreground="#ef4444" FontSize="12" FontWeight="SemiBold"/>

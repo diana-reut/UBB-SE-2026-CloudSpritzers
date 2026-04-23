@@ -1,7 +1,4 @@
-﻿using CloudSpritzers1.src.model;
-using CloudSpritzers1.src.model.employee;
-using CloudSpritzers1.src.viewModel.general;
-using CloudSpritzers1.src.viewModel.review;
+﻿using CloudSpritzers1.src.viewModel.general;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -10,22 +7,14 @@ namespace CloudSpritzers1.src.view.general
 {
     public sealed partial class UpperBar : UserControl
     {
-
-        public UpperBarViewModel ViewModel { get; }
-
-        private User _user;
-        private Employee _employee;
+        public CloudSpritzers1.src.viewModel.general.UpperBarViewModel ViewModel { get; }
 
         public UpperBar()
         {
             this.InitializeComponent();
 
-            _user = ((App)App.Current).User;
-            _employee = ((App)App.Current).Employee;
-
-            ViewModel = (App.Current as App).Services.GetService<UpperBarViewModel>();
+            ViewModel = (App.Current as App).Services.GetService<CloudSpritzers1.src.viewModel.general.UpperBarViewModel>();
             this.DataContext = ViewModel;
-            ViewModel.IsEmployee = !(App.Current as App).isEmployee;
         }
 
         private DependencyObject FindParentFrame()
@@ -38,49 +27,52 @@ namespace CloudSpritzers1.src.view.general
             return parent;
         }
 
-        public void NavigateToChat(object sender, RoutedEventArgs e)
+        public void OnChatRequested(object sender, RoutedEventArgs e)
         {
             if (FindParentFrame() is Frame frame)
             {
-                frame.Navigate(typeof(CloudSpritzers1.src.view.chat.ChatPage));
+                frame.Navigate(ViewModel.ChatPageType);
             }
         }
 
-        public void NavigateToLanding(object sender, RoutedEventArgs e)
+        public void OnLandingRequested(object sender, RoutedEventArgs e)
         {
             if (FindParentFrame() is Frame frame)
             {
-                frame.Navigate(typeof(CloudSpritzers1.src.view.general.LandingPage));
+                frame.Navigate(ViewModel.LandingPageType);
             }
         }
 
-        public void NavigateToFAQ(object sender, RoutedEventArgs e)
+        public void OnFAQRequested(object sender, RoutedEventArgs e)
         {
             if (FindParentFrame() is Frame frame)
             {
-                frame.Navigate(typeof(CloudSpritzers1.src.view.faq.FAQView));
+                frame.Navigate(ViewModel.FAQPageType);
             }
         }
 
-        public void NavigateToTickets(object sender, RoutedEventArgs e)
+        public void OnTicketsRequested(object sender, RoutedEventArgs e)
         {
             if (FindParentFrame() is Frame frame)
             {
-                if(_user != null)
-                    frame.Navigate(typeof(CloudSpritzers1.src.view.ticket.TicketsView));
-                else
-                    frame.Navigate(typeof(CloudSpritzers1.src.view.ticket.TicketEmployeeView));
+                frame.Navigate(ViewModel.TicketsPageType);
             }
         }
 
-        public void NavigateToReviews(object sender, RoutedEventArgs e)
+        public void OnReviewsRequested(object sender, RoutedEventArgs e)
         {
             if (FindParentFrame() is Frame frame)
             {
-                if(_user != null)
-                    frame.Navigate(typeof(CloudSpritzers1.src.view.review.ReviewPage));
-                else
-                    frame.Navigate(typeof(CloudSpritzers1.src.view.review.EmployeeSeeReviews));
+                frame.Navigate(ViewModel.ReviewsPageType);
+            }
+        }
+
+        public void OnHomeRequested(object sender, RoutedEventArgs e)
+        {
+            // Navigate to choosing page using the Window's root content safe for WinUI 3
+            if (this.XamlRoot.Content is Frame rootFrame)
+            {
+                rootFrame.Navigate(ViewModel.ChoosingPageType);
             }
         }
     }

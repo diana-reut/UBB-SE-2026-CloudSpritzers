@@ -8,13 +8,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
+using CloudSpritzers1.src.service.interfaces;
 
 namespace CloudSpritzers1.src.viewmodel
 {
     public partial class MessageViewModel : ObservableObject
     {
         private readonly MessageService _messageService;
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
         private readonly int _chatId;
@@ -24,7 +25,7 @@ namespace CloudSpritzers1.src.viewmodel
 
         public MessageViewModel(
             MessageService messageService,
-            UserService userService,
+            IUserService userService,
             IMapper mapper,
             int chatId,
             int currentUserId)

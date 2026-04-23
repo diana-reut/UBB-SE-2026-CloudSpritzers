@@ -1,4 +1,3 @@
-using CloudSpritzers1.src.viewmodel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -15,33 +14,56 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using CloudSpritzers1.src.viewModel.general;
 
 namespace CloudSpritzers1.src.view.general
 {
     public sealed partial class ChoosingPage : Page
     {
+        public ChoosingPageViewModel ViewModel { get; } = new ChoosingPageViewModel();
+
 
         public ChoosingPage()
         {
             InitializeComponent();
+            this.DataContext = ViewModel;
+
+            // Optional: Set DataContext if you want to use {Binding} in XAML
+            // instead of {x:Bind ViewModel.PropertyName}
+
         }
 
-        private async void showError(string message, string title)
+        /// <summary>
+        /// Displays an error dialog with the specified message and title.
+        /// </summary>
+        /// <param name="message">The error message to display.</param>
+        /// <param name="title">The title of the error dialog.</param>
+        private async void DisplayErrorMessage(string message, string title)
         {
             var dialog1 = new MaiBoule(message, title);
             dialog1.XamlRoot = this.Content.XamlRoot;
             await dialog1.ShowAsync();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Handles the click event for user role selection buttons.
+        /// Sets the application's user role based on the button's Tag and navigates to the EnterYourId page.
+        /// </summary>
+        /// <param name="sender">The button that was clicked.</param>
+        /// <param name="e">Event data for the click event.</param>
+        private void SelectUserRole_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
+            if (sender is Button button && button.Tag != null)
+            {
+                ViewModel.SetUserRole(button.Tag.ToString());
 
-            bool isEmployee = button?.Tag?.ToString() == "Employee";
-            var app = (App)App.Current;
-            app.isEmployee = isEmployee;
-
-            Frame.Navigate(typeof(EnterYourId));
+                Frame.Navigate(typeof(EnterYourId));
+            }
         }
     }
 }
+
+
+
+
+

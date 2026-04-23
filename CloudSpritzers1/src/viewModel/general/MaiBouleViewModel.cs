@@ -1,27 +1,27 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CloudSpritzers1.src.viewModel.general
 {
+
+    /// <summary>
+    /// ViewModel for the MaiBoule dialog.
+    /// Provides properties for the dialog's title and message, with change notification support.
+    /// </summary>
     public sealed partial class MaiBouleViewModel : ObservableObject
     {
-        private string _title = "Warning";
-        public string Title
-        {
-            get => _title;
-            set => SetProperty(ref _title, value);
-        }
+        /// <summary>
+        /// The title displayed in the dialog.
+        /// Default value is "Warning".
+        /// </summary>
+        [ObservableProperty]
+        private string title = "Warning";
 
-        private string _message = "Oopsie Daisy! Boule.";
-        public string Message
-        {
-            get => _message;
-            set => SetProperty(ref _message, value);
-        }
-
+        /// <summary>
+        /// The message content displayed in the dialog.
+        /// Default value is "Oopsie Daisy! Boule.".
+        /// </summary>
+        [ObservableProperty]
+        private string message = "Oopsie Daisy! Boule.";
     }
 }

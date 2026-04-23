@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CloudSpritzers1.src.service.interfaces;
 
 namespace CloudSpritzers1.src.viewModel.chat
 {
@@ -24,14 +25,14 @@ namespace CloudSpritzers1.src.viewModel.chat
 
         private MessageService _messageService;
         private ChatService _chatService;
-        private UserService _userService;
+        private IUserService _userService;
         private IMapper _mapper;
         private Chat _chat;
         private User _user;
         private const int _FIRST_OPTION = 1;
 
 
-        public ChatViewModel(MessageService msgService,ChatService chatService, IMapper mapper, UserService userService) {
+        public ChatViewModel(MessageService msgService,ChatService chatService, IMapper mapper, IUserService userService) {
             _messageService = msgService;
             _chatService = chatService;
             _mapper = mapper;
@@ -40,7 +41,7 @@ namespace CloudSpritzers1.src.viewModel.chat
             // TODO: add null guard
             _user = (App.Current as App).User; 
 
-            _chat = _chatService.OpenChat(_user.GetId());
+            _chat = _chatService.OpenChat(_user.RetrieveUniqueDatabaseIdentifierForBot());
 
             LoadChatHistory();
 
@@ -51,7 +52,7 @@ namespace CloudSpritzers1.src.viewModel.chat
 
         }
 
-        public string FormatUserId => "User Id: " + _user.GetId().ToString();
+        public string FormatUserId => "User Id: " + _user.RetrieveUniqueDatabaseIdentifierForBot().ToString();
         
         public void CloseChat()
         {
@@ -63,11 +64,11 @@ namespace CloudSpritzers1.src.viewModel.chat
         {
             ChatHistory.Clear();
             var messages = _messageService.GetAllMessages(_chat.ChatId);
-            var currentUserId = _user.GetId();
+            var currentUserId = _user.RetrieveUniqueDatabaseIdentifierForBot();
             foreach (var msg in messages)
             {
                 var dto = _mapper.Map<MessageDTO>(msg);
-                dto.SenderName = _userService.GetById(dto.SenderId)?.GetName();
+                dto.SenderName = _userService.GetById(dto.SenderId)?.RetrieveConfiguredDisplayFullNameForBot();
                 dto.IsOutgoing = (dto.SenderId == currentUserId);
                 ChatHistory.Add(dto);
             }

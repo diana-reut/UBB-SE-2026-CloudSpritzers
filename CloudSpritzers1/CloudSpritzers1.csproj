@@ -11,9 +11,9 @@
 		<UseWinUI>true</UseWinUI>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<Nullable>enable</Nullable>
+		<WindowsPackageType>None</WindowsPackageType>
 	</PropertyGroup>
 	<ItemGroup>
-		<Compile Remove="src\viewModel\general\ChoosingPageViewModel.cs" />
 		<Compile Remove="src\view\faq\FAQPage.xaml.cs" />
 	</ItemGroup>
 	<ItemGroup>
@@ -55,9 +55,6 @@
   -->
 	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
 		<ProjectCapability Include="Msix" />
-	</ItemGroup>
-	<ItemGroup>
-	  <None Include="src\viewModel\general\ChoosingPageViewModel.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="12.0.0" />

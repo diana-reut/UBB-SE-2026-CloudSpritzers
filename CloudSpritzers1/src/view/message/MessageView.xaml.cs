@@ -6,14 +6,14 @@ namespace CloudSpritzers1.src.view.message
 {
     public sealed partial class MessageView : UserControl
     {
-        public MessageDTO ViewModel => (MessageDTO)DataContext;
+        public MessageDTO DataTransferObjectContainingMessageDetailsForViewModelBinding => (MessageDTO)DataContext;
 
         public MessageView()
         {
             this.InitializeComponent();
-            this.DataContextChanged += (s, e) =>
+            this.DataContextChanged += (senderObjectTriggeringEvent, eventArgumentsContainingDataContextInformation) =>
             {
-                if (e.NewValue is MessageDTO)
+                if (eventArgumentsContainingDataContextInformation.NewValue is MessageDTO)
                 {
                     this.Bindings.Update();
                 }

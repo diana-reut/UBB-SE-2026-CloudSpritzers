@@ -13,7 +13,6 @@ namespace CloudSpritzers1.src.dto.mappingProfiles
     {
         public EmployeeMappingProfile()
         {
-            System.Diagnostics.Debug.WriteLine("EmployeeMappingProfile Loaded!");
             CreateMap<Employee, EmployeeDTO>();
         }
     }

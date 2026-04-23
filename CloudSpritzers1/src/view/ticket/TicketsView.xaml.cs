@@ -1,230 +1,150 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Media;
+
 using Microsoft.UI;
-using CloudSpritzers1.src.model.ticket;
-using CloudSpritzers1.src.model;
-using System.Collections.ObjectModel;
-using CloudSpritzers1.src.dto;
-using CloudSpritzers1.src.repository;
-using CloudSpritzers1.src.service;
-using CloudSpritzers1.src.viewModel;
-using CloudSpritzers1.src.viewModel.review;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using CloudSpritzers1.src.viewModel;
+using CloudSpritzers1.src.dto;
+using CloudSpritzers1.src.model.ticket;
+using Microsoft.UI.Xaml.Media;
 
 namespace CloudSpritzers1.src.view.ticket
 {
     public sealed partial class TicketsView : Page
     {
+        private const int DEFAULT_GUEST_IDENTIFIER = 1;
+        private const string DEFAULT_SYSTEM_EMAIL = "email@email.com";
+
         public TicketsViewModel ViewModel { get; }
+
         public TicketsView()
         {
             ViewModel = (App.Current as App).Services.GetService<TicketsViewModel>();
             this.InitializeComponent();
-
-
             this.DataContext = ViewModel;
-
-            // Bind ItemsControl
-            TicketList.ItemsSource = ViewModel.GetAllTickets();
         }
+
         private async void CreateTicketButton_Click(object sender, RoutedEventArgs e)
         {
-            ContentDialog dialog = null;
+            // Build the UI using the helper method to keep this handler clean
+            var (layout, inputs) = BuildSubmissionForm();
 
-            // Input controls
-            TextBox titleBox = null;
-            ComboBox categoryCombo = null;
-            ComboBox subcategoryCombo = null;
-            TextBox descriptionBox = null;
-            TextBox emailBox = null;
-
-            // Main content panel
-            var stackPanel = new StackPanel { Spacing = 12, HorizontalAlignment = HorizontalAlignment.Left };
-
-            // Header
-            stackPanel.Children.Add(new TextBlock
-            {
-                Text = "Submit a New Ticket",
-                FontSize = 24,
-                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                Foreground = new SolidColorBrush(Colors.Black)
-            });
-
-            stackPanel.Children.Add(new TextBlock
-            {
-                Text = "Please provide detailed information about your issue. All fields marked with * are required.",
-                FontSize = 14,
-                Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 107, 114, 128)),
-                TextWrapping = TextWrapping.Wrap
-            });
-
-            // Title
-            stackPanel.Children.Add(new TextBlock { Text = "Title of the issue*", FontSize = 16, Foreground = new SolidColorBrush(Colors.Black) });
-            titleBox = new TextBox
-            {
-                PlaceholderText = "e.g., Lost baggage, damaged suitcase, service complaint",
-                Width = 400,
-                Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 243, 243, 245)),
-                Foreground = new SolidColorBrush(Colors.Black),
-                Padding = new Thickness(8),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                PlaceholderForeground = new SolidColorBrush(Colors.DarkGray)
-            };
-            stackPanel.Children.Add(titleBox);
-
-            // Category
-            stackPanel.Children.Add(new TextBlock { Text = "Category*", FontSize = 16, Foreground = new SolidColorBrush(Colors.Black) });
-            categoryCombo = new ComboBox
-            {
-                PlaceholderText = "Select a category",
-                Width = 400,
-                Background = new SolidColorBrush(Colors.White),
-                Foreground = new SolidColorBrush(Colors.Black),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                PlaceholderForeground = new SolidColorBrush(Colors.DarkGray)
-            };
-            foreach (var cat in ViewModel.Categories)
-                categoryCombo.Items.Add(cat.Name);
-            stackPanel.Children.Add(categoryCombo);
-
-            // Subcategory
-            stackPanel.Children.Add(new TextBlock { Text = "Subcategory*", FontSize = 16, Foreground = new SolidColorBrush(Colors.Black) });
-            subcategoryCombo = new ComboBox
-            {
-                PlaceholderText = "Select a subcategory",
-                Width = 400,
-                Background = new SolidColorBrush(Colors.White),
-                Foreground = new SolidColorBrush(Colors.Black),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                PlaceholderForeground = new SolidColorBrush(Colors.DarkGray)
-            };
-            stackPanel.Children.Add(subcategoryCombo);
-
-            // Load subcategories when category changes
-            categoryCombo.SelectionChanged += (_, _) =>
-            {
-                subcategoryCombo.Items.Clear();
-                if (categoryCombo.SelectedItem == null) return;
-                var selectedCategory = ViewModel.Categories.FirstOrDefault(c => c.Name == categoryCombo.SelectedItem.ToString());
-                if (selectedCategory == null) return;
-                ViewModel.LoadSubcategories(selectedCategory.CategoryId);
-                foreach (var sub in ViewModel.Subcategories)
-                    subcategoryCombo.Items.Add(sub.SubcategoryName);
-            };
-
-            // Description
-            stackPanel.Children.Add(new TextBlock { Text = "Description*", FontSize = 16, Foreground = new SolidColorBrush(Colors.Black) });
-            descriptionBox = new TextBox
-            {
-                PlaceholderText = "Please describe the issue in detail",
-                Width = 400,
-                Height = 120,
-                TextWrapping = TextWrapping.Wrap,
-                AcceptsReturn = true,
-                Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 243, 243, 245)),
-                Foreground = new SolidColorBrush(Colors.Black),
-                Padding = new Thickness(8),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                PlaceholderForeground = new SolidColorBrush(Colors.DarkGray)
-            };
-            stackPanel.Children.Add(descriptionBox);
-
-
-            // Buttons
-            var buttonPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Left, Spacing = 12, Margin = new Thickness(0, 12, 0, 0) };
-
-            var sendBtn = new Button { Content = "Send", Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 43, 184, 192)), Foreground = new SolidColorBrush(Colors.White), Padding = new Thickness(12, 6, 12, 6) };
-            sendBtn.Click += async (s, args) =>
-            {
-                try
-                {
-                    if (string.IsNullOrWhiteSpace(titleBox.Text) || string.IsNullOrWhiteSpace(descriptionBox.Text))
-                        throw new Exception("Please fill all required fields.");
-
-                    // Map Category and Subcategory IDs
-                    var selectedCategory = ViewModel.Categories.FirstOrDefault(c => c.Name == categoryCombo.SelectedItem?.ToString());
-                    var selectedSubcategory = ViewModel.Subcategories.FirstOrDefault(s => s.SubcategoryName == subcategoryCombo.SelectedItem?.ToString());
-
-                    int categoryId = selectedCategory?.CategoryId ?? 1;
-                    int subcategoryId = selectedSubcategory?.SubcategoryId ?? 1;
-
-                    // Create DTO
-                    var newTicket = new TicketDTO(
-                        TicketId: ViewModel.NrTickets() + 1,
-                        UserId: 1,
-                        UserEmail: "email@email.com",
-                        UrgencyLevel: UrgencyLevelEnum.LOW,
-                        Status: StatusEnum.OPEN,
-                        CategoryId: categoryId,
-                        CategoryName: selectedCategory?.Name ?? "General",
-                        SubcategoryId: subcategoryId,
-                        SubcategoryName: selectedSubcategory?.SubcategoryName ?? "General",
-                        Subject: titleBox.Text,
-                        Description: descriptionBox.Text,
-                        CreatedAt: DateTime.Now
-                    );
-
-                    ViewModel.CreateTicket(newTicket);
-                    dialog?.Hide();
-                }
-                catch (Exception ex)
-                {
-                    dialog?.Hide();
-                    var errorDialog = new ContentDialog
-                    {
-                        XamlRoot = this.XamlRoot,
-                        Title = "Error",
-                        Content = ex.Message,
-                        CloseButtonText = "OK"
-                    };
-                    await errorDialog.ShowAsync();
-                }
-            };
-
-            var cancelBtn = new Button { Content = "Cancel", Background = new SolidColorBrush(Colors.White), Foreground = new SolidColorBrush(Colors.Black), BorderBrush = new SolidColorBrush(Colors.Black), BorderThickness = new Thickness(1), Padding = new Thickness(12, 6, 12, 6) };
-            cancelBtn.Click += (s, args) => dialog?.Hide();
-
-            buttonPanel.Children.Add(sendBtn);
-            buttonPanel.Children.Add(cancelBtn);
-            stackPanel.Children.Add(buttonPanel);
-
-            // Show dialog
-            dialog = new ContentDialog
+            ContentDialog submissionDialog = new ContentDialog
             {
                 XamlRoot = this.XamlRoot,
+                Content = new ScrollViewer { MaxHeight = 500, Content = layout },
                 Background = new SolidColorBrush(Colors.White),
-                RequestedTheme = ElementTheme.Light,
-                Content = new ScrollViewer { MaxHeight = 500, Content = stackPanel },
-                PrimaryButtonText = null,
-                CloseButtonText = null
+                RequestedTheme = ElementTheme.Light
             };
 
+            // Logic for the Send button
+            inputs.SubmitButton.Click += async (s, args) =>
+            {
+                await HandleSubmission(inputs, submissionDialog);
+            };
+
+            // Logic for the Cancel button
+            inputs.CancelButton.Click += (s, args) => submissionDialog.Hide();
+
+            await submissionDialog.ShowAsync();
+        }
+
+        private async Task HandleSubmission(SubmissionFormInputs inputs, ContentDialog dialog)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(inputs.TitleBox.Text) || string.IsNullOrWhiteSpace(inputs.DescriptionBox.Text))
+                    throw new Exception("Please fill all required fields.");
+
+                var selectedCategory = ViewModel.Categories.FirstOrDefault(c => c.CategoryName == inputs.CategoryCombo.SelectedItem?.ToString());
+                var selectedSubcategory = ViewModel.Subcategories.FirstOrDefault(s => s.SubcategoryName == inputs.SubcategoryCombo.SelectedItem?.ToString());
+
+                var newTicket = new TicketDTO(
+                    TicketId: ViewModel.GetTotalTicketCount() + 1,
+                    CreatorAccountId: DEFAULT_GUEST_IDENTIFIER,
+                    CreatorEmailAddress: DEFAULT_SYSTEM_EMAIL,
+                    UrgencyLevel: TicketUrgencyLevelEnum.LOW,
+                    CurrentStatus: TicketStatusEnum.OPEN,
+                    CategoryId: selectedCategory?.CategoryId ?? 1,
+                    CategoryName: selectedCategory?.CategoryName ?? "General",
+                    SubcategoryId: selectedSubcategory?.SubcategoryId ?? 1,
+                    SubcategoryName: selectedSubcategory?.SubcategoryName ?? "General",
+                    Subject: inputs.TitleBox.Text,
+                    Description: inputs.DescriptionBox.Text,
+                    CreationTimestamp: DateTime.Now
+                );
+
+                ViewModel.CreateTicket(newTicket);
+                dialog.Hide();
+            }
+            catch (Exception ex)
+            {
+                await ShowError(ex.Message);
+            }
+        }
+
+        private (StackPanel Layout, SubmissionFormInputs Inputs) BuildSubmissionForm()
+        {
+            var panel = new StackPanel { Spacing = 12, Padding = new Thickness(10) };
+
+            panel.Children.Add(new TextBlock { Text = "Submit a New Ticket", FontSize = 24, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
+
+            var titleBox = new TextBox { Header = "Title of the issue*", PlaceholderText = "e.g. Damaged suitcase", Width = 400 };
+            panel.Children.Add(titleBox);
+
+            var categoryCombo = new ComboBox { Header = "Category*", Width = 400, PlaceholderText = "Select Category" };
+            foreach (var cat in ViewModel.Categories) categoryCombo.Items.Add(cat.CategoryName);
+            panel.Children.Add(categoryCombo);
+
+            var subcategoryCombo = new ComboBox { Header = "Subcategory*", Width = 400, PlaceholderText = "Select Subcategory" };
+            panel.Children.Add(subcategoryCombo);
+
+            categoryCombo.SelectionChanged += (s, e) => {
+                subcategoryCombo.Items.Clear();
+                var cat = ViewModel.Categories.FirstOrDefault(c => c.CategoryName == categoryCombo.SelectedItem?.ToString());
+                if (cat == null) return;
+                ViewModel.LoadSubcategories(cat.CategoryId);
+                foreach (var sub in ViewModel.Subcategories) subcategoryCombo.Items.Add(sub.SubcategoryName);
+            };
+
+            var descriptionBox = new TextBox { Header = "Description*", PlaceholderText = "Details...", Height = 120, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true };
+            panel.Children.Add(descriptionBox);
+
+            var btnPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10, Margin = new Thickness(0, 10, 0, 0) };
+            var sendBtn = new Button { Content = "Send", Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 43, 184, 192)), Foreground = new SolidColorBrush(Colors.White) };
+            var cancelBtn = new Button { Content = "Cancel" };
+            btnPanel.Children.Add(sendBtn);
+            btnPanel.Children.Add(cancelBtn);
+            panel.Children.Add(btnPanel);
+
+            return (panel, new SubmissionFormInputs { TitleBox = titleBox, CategoryCombo = categoryCombo, SubcategoryCombo = subcategoryCombo, DescriptionBox = descriptionBox, SubmitButton = sendBtn, CancelButton = cancelBtn });
+        }
+
+        private async Task ShowError(string message)
+        {
+            var dialog = new ContentDialog { XamlRoot = this.XamlRoot, Title = "Error", Content = message, CloseButtonText = "OK" };
             await dialog.ShowAsync();
         }
+
         private void FilterChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ViewModel == null)
-                return;
-
-            var combo = sender as ComboBox;
-
-            if (combo?.SelectedItem is not ComboBoxItem selected)
-                return;
-
-            if (selected.Tag == null)
-                return;
-
-            ViewModel.SelectedFilterString = selected.Tag.ToString();
+            if (sender is ComboBox combo && combo.SelectedItem is ComboBoxItem selected && selected.Tag != null)
+            {
+                ViewModel.SelectedFilterString = selected.Tag.ToString();
+            }
         }
+    }
+
+    public class SubmissionFormInputs
+    {
+        public TextBox TitleBox { get; set; }
+        public ComboBox CategoryCombo { get; set; }
+        public ComboBox SubcategoryCombo { get; set; }
+        public TextBox DescriptionBox { get; set; }
+        public Button SubmitButton { get; set; }
+        public Button CancelButton { get; set; }
     }
 }

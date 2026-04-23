@@ -4,9 +4,9 @@ using Microsoft.Data.SqlClient;
 using CloudSpritzers1.src.model.message;
 using CloudSpritzers1.src.model.chat;
 
-namespace CloudSpritzers1.src.repository
+namespace CloudSpritzers1.src.repository.database
 {
-    public class MessageDBRepository : DBRepository<int, Message>, IRepository<int, Message>
+    public class MessageDatabaseRepository : DatabaseRepository<int, Message>, IRepository<int, Message>
     {
         protected override Message MapRowToEntity(SqlDataReader reader)
         {
@@ -27,7 +27,7 @@ namespace CloudSpritzers1.src.repository
 
         protected override int GetEntityId(Message entity) => entity.GetId();
 
-        public int Add(Message elem)
+        public int CreateNewEntity(Message elem)
         {
             const string query =
                 "INSERT INTO Message (sender_id, chat_id, timestamp, text, is_read) " +
@@ -35,7 +35,7 @@ namespace CloudSpritzers1.src.repository
                 "SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             var cmd = new SqlCommand(query);
-            cmd.Parameters.AddWithValue("@senderId", elem.GetSender().GetId());
+            cmd.Parameters.AddWithValue("@senderId", elem.GetSender().RetrieveUniqueDatabaseIdentifierForBot());
             cmd.Parameters.AddWithValue("@chatId", ((IMessage)elem).GetChat().ChatId);
             cmd.Parameters.AddWithValue("@timestamp", DateTimeOffset.UtcNow);
             cmd.Parameters.AddWithValue("@text", elem.GetMessage());
@@ -118,9 +118,9 @@ namespace CloudSpritzers1.src.repository
         {
             private readonly int _id;
             public SenderStub(int id) => _id = id;
-            public int GetId() => _id;
-            public string GetName() => string.Empty;
-            public string GetEmail() => string.Empty;
+            public int RetrieveUniqueDatabaseIdentifierForBot() => _id;
+            public string RetrieveConfiguredDisplayFullNameForBot() => string.Empty;
+            public string RetrieveConfiguredEmailAddressForBotContact() => string.Empty;
         }
 
 

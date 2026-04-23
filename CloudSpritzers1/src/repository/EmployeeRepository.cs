@@ -1,4 +1,5 @@
 ﻿using CloudSpritzers1.src.model.employee;
+using CloudSpritzers1.src.repository.database;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -8,95 +9,99 @@ using System.Threading.Tasks;
 
 namespace CloudSpritzers1.src.repository
 {
-    public class EmployeeRepository : DBRepository<int, Employee>, IRepository<int, Employee>
+    public class EmployeeRepository : DatabaseRepository<int, Employee>, IRepository<int, Employee>, IEmployeeRepository
     {
-        public int Add(Employee elem)
+        public int CreateNewEntity(Employee employeeEntity)
         {
-            if (elem == null)
-                throw new ArgumentNullException(nameof(elem), "Employee cannot be null.");
+            if (employeeEntity == null)
+                throw new ArgumentNullException(nameof(employeeEntity), "Employee cannot be null.");
 
-            string query = "INSERT INTO Employee " +
+            string insertQuery = "INSERT INTO Employee " +
                 "(name, email, group) " +
                 "OUTPUT INSERTED.employee_id " +
                 "VALUES (@name, @email, @group)";
 
-            SqlCommand command = new SqlCommand(query);
+            SqlCommand sqlCommand = new SqlCommand(insertQuery);
 
-            command.Parameters.AddWithValue("@name", elem.GetName());
-            command.Parameters.AddWithValue("@email", elem.GetEmail());
-            command.Parameters.AddWithValue("@group", elem.GetGroup());
 
-            int id = base.Add(command, elem);
-            return id;
+            sqlCommand.Parameters.AddWithValue("@name", employeeEntity.RetrieveConfiguredDisplayFullNameForBot());
+            sqlCommand.Parameters.AddWithValue("@email", employeeEntity.RetrieveConfiguredEmailAddressForBotContact());
+            sqlCommand.Parameters.AddWithValue("@group", employeeEntity.GetDepartmentName());
+
+
+            int identificationNumber = base.Add(sqlCommand, employeeEntity);
+            return identificationNumber;
         }
 
-        public void DeleteById(int id)
+        public void DeleteById(int identificationNumber)
         {
-            string query = "DELETE FROM Employee WHERE employee_id = @id";
-            SqlCommand command = new SqlCommand(query);
-            command.Parameters.AddWithValue("@id", id);
+            string deleteQuery = "DELETE FROM Employee WHERE employee_id = @id";
+            SqlCommand sqlCommand = new SqlCommand(deleteQuery);
+            sqlCommand.Parameters.AddWithValue("@id", identificationNumber);
 
-            base.DeleteById(id, command);
+            base.DeleteById(identificationNumber, sqlCommand);
         }
 
         public IEnumerable<Employee> GetAll()
         {
-            string query = "SELECT * FROM Employee";
-            SqlCommand command = new SqlCommand(query);
-            return base.GetAll(command);
+            string selectAllQuery = "SELECT * FROM Employee";
+            SqlCommand sqlCommand = new SqlCommand(selectAllQuery);
+            return base.GetAll(sqlCommand);
         }
 
-        public Employee GetById(int id)
+        public Employee GetById(int identificationNumber)
         {
-            string query = "SELECT * FROM Employee WHERE employee_id = @id";
-            SqlCommand command = new SqlCommand(query);
-            command.Parameters.AddWithValue("@id", id);
+            string selectByIdQuery = "SELECT * FROM Employee WHERE employee_id = @id";
+            SqlCommand sqlCommand = new SqlCommand(selectByIdQuery);
+            sqlCommand.Parameters.AddWithValue("@id", identificationNumber);
 
-            Employee employee = base.GetById(id, command);
+            Employee foundEmployee = base.GetById(identificationNumber, sqlCommand);
 
-            if (employee == null)
-                throw new KeyNotFoundException($"Employee with id {id} was not found.");
+            if (foundEmployee == null)
+                throw new KeyNotFoundException($"Employee with id {identificationNumber} was not found.");
 
-            return employee;
+            return foundEmployee;
         }
 
-        public void UpdateById(int id, Employee elem)
+        public void UpdateById(int identificationNumber, Employee employeeEntity)
         {
-            if (elem == null)
-                throw new ArgumentNullException(nameof(elem), "Employee cannot be null.");
+            if (employeeEntity == null)
+                throw new ArgumentNullException(nameof(employeeEntity), "Employee cannot be null.");
 
-            string query = "UPDATE Employee SET " +
+            string updateQuery = "UPDATE Employee SET " +
                 "name = @name, " +
                 "email = @email " +
                 "group = @group " +
                 "WHERE employee_id = @id";
 
-            SqlCommand command = new SqlCommand(query);
-
-            command.Parameters.AddWithValue("@id", id);
-            command.Parameters.AddWithValue("@name", elem.GetName());
-            command.Parameters.AddWithValue("@email", elem.GetEmail());
-            command.Parameters.AddWithValue("@group", elem.GetGroup());
+            SqlCommand sqlCommand = new SqlCommand(updateQuery);
 
 
-            base.UpdateById(id, command, elem);
+            sqlCommand.Parameters.AddWithValue("@id", identificationNumber);
+            sqlCommand.Parameters.AddWithValue("@name", employeeEntity.RetrieveConfiguredDisplayFullNameForBot());
+            sqlCommand.Parameters.AddWithValue("@email", employeeEntity.RetrieveConfiguredEmailAddressForBotContact());
+            sqlCommand.Parameters.AddWithValue("@group", employeeEntity.GetDepartmentName());
+
+
+
+            base.UpdateById(identificationNumber, sqlCommand, employeeEntity);
         }
 
-        protected override int GetEntityId(Employee entity)
+        protected override int GetEntityId(Employee employeeEntity)
         {
-            return entity.EmployeeId;
+            return employeeEntity.EmployeeId;
         }
 
-        protected override Employee MapRowToEntity(SqlDataReader reader)
+        protected override Employee MapRowToEntity(SqlDataReader sqlDataReader)
         {
-            int employeeId = reader.GetInt32(reader.GetOrdinal("employee_id"));
-            string name = reader.GetString(reader.GetOrdinal("name"));
-            string email = reader.GetString(reader.GetOrdinal("email"));
-            string groupString = reader.GetString(reader.GetOrdinal("group"));
+            int employeeIdentificationNumber = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("employee_id"));
+            string employeeFullName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("name"));
+            string employeeEmailAddress = sqlDataReader.GetString(sqlDataReader.GetOrdinal("email"));
+            string departmentName = sqlDataReader.GetString(sqlDataReader.GetOrdinal("group"));
 
-            GroupEnum groupEnum = (GroupEnum)Enum.Parse(typeof(GroupEnum), groupString);
+            EmployeeDepartment departmentEnum = (EmployeeDepartment)Enum.Parse(typeof(EmployeeDepartment), departmentName);
 
-            return new Employee(employeeId, name, email, groupEnum);
+            return new Employee(employeeIdentificationNumber, employeeFullName, employeeEmailAddress, departmentEnum);
         }
     }
 }

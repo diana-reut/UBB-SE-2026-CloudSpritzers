@@ -18,7 +18,7 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="40">
 
-                <Button Tag="Customer" Click="Button_Click" Width="350" Height="400" CornerRadius="12" Background="{ThemeResource CardBackgroundBrush}" Padding="30">
+                <Button Tag="Customer" Click="SelectUserRole_Click" Width="350" Height="400" CornerRadius="12" Background="{ThemeResource CardBackgroundBrush}" Padding="30">
                     <Button.Resources>
                         <SolidColorBrush x:Key="ButtonBackground" Color="{StaticResource CardBackgroundColor}"/>
                         <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{StaticResource PrimaryMutedColor}"/>
@@ -33,7 +33,7 @@
                     </StackPanel>
                 </Button>
 
-                <Button Tag="Employee" Click="Button_Click" Width="350" Height="400" CornerRadius="12" Background="{ThemeResource CardBackgroundBrush}" Padding="30">
+                <Button Tag="Employee" Click="SelectUserRole_Click" Width="350" Height="400" CornerRadius="12" Background="{ThemeResource CardBackgroundBrush}" Padding="30">
                     <Button.Resources>
                         <SolidColorBrush x:Key="ButtonBackground" Color="{StaticResource CardBackgroundColor}"/>
                         <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{StaticResource PrimaryMutedColor}"/>

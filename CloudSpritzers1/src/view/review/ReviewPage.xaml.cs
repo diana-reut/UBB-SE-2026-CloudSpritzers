@@ -20,6 +20,11 @@ namespace CloudSpritzers1.src.view.review
 
             this.DataContext = ViewModel;
             ViewModel.AlertRequested += OnAlertRequested;
+
+            this.Unloaded += (sender, eventArguments) =>
+            {
+                ViewModel.AlertRequested -= OnAlertRequested;
+            };
         }
 
         private async void OnAlertRequested(object? sender, (string Title, string Message) args)
@@ -32,7 +37,7 @@ namespace CloudSpritzers1.src.view.review
             await dialog.ShowAsync();
         }
 
-        private async void OnClick(object sender, RoutedEventArgs e)
+        private async void NavigateToTicketsView_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
 

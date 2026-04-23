@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace CloudSpritzers1.src.model.ticket
 {
-    public enum UrgencyLevelEnum
+    public enum TicketStatusEnum
     {
-        LOW,
-        MEDIUM,
-        HIGH
-
+        OPEN,
+        IN_PROGRESS,
+        RESOLVED
     }
 }

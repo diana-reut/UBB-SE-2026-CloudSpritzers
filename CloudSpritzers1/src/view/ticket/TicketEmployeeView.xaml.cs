@@ -38,11 +38,12 @@ namespace CloudSpritzers1.src.view.ticket
             this.DataContext = ViewModel;
         }
 
+
         private async void EditTicketStatus_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is int ticketId)
             {
-                var ticket = ViewModel.TicketsRead.FirstOrDefault(t => t.TicketId == ticketId);
+                var ticket = ViewModel.FilteredTicketsForDisplay.FirstOrDefault(t => t.TicketId == ticketId);
                 if (ticket == null) return;
 
                 var primaryButtonStyle = new Style(typeof(Button));
@@ -60,7 +61,7 @@ namespace CloudSpritzers1.src.view.ticket
                 closeButtonStyle.Setters.Add(new Setter(Button.CornerRadiusProperty, new CornerRadius(5))); // Rounded corners
                 var dialog = new ContentDialog
                 {
-                    Title = $"Edit Status for Ticket #{ticket.TicketId}",
+                    Title = $"Edit CurrentStatus for Ticket #{ticket.TicketId}",
                     PrimaryButtonText = "Save",
                     CloseButtonText = "Cancel",
                     XamlRoot = this.XamlRoot,
@@ -82,20 +83,20 @@ namespace CloudSpritzers1.src.view.ticket
                 };
 
                 // Add enum items as strings
-                foreach (var status in Enum.GetValues(typeof(StatusEnum)).Cast<StatusEnum>())
+                foreach (var status in Enum.GetValues(typeof(TicketStatusEnum)).Cast<TicketStatusEnum>())
                 {
                     combo.Items.Add(status.ToString());
                 }
 
                 // Set the selected item to current status
-                combo.SelectedItem = ticket.Status.ToString();
+                combo.SelectedItem = ticket.CurrentStatus.ToString();
 
                 dialog.Content = combo;
 
                 var result = await dialog.ShowAsync();
                 if (result == ContentDialogResult.Primary && combo.SelectedItem is string selectedStr)
                 {
-                    if (Enum.TryParse<StatusEnum>(selectedStr, out var newStatus))
+                    if (Enum.TryParse<TicketStatusEnum>(selectedStr, out var newStatus))
                     {
                         ViewModel.UpdateStatus(ticket.TicketId, newStatus);
                     }

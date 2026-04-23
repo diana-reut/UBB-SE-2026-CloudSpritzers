@@ -12,10 +12,13 @@ namespace CloudSpritzers1.src.view.faq
 
         public class BooleanToGlyphConverter : IValueConverter
         {
-            public object Convert(object value, Type targetType, object parameter, string language)
+        private const string IconWhenExpanded = "\uE70D";
+        private const string IconWhenNotExpanded = "\uE76C";
+
+        public object Convert(object value, Type targetType, object parameter, string language)
             {
                 bool isExpanded = value is bool b && b;
-                return isExpanded ? "\uE70D" : "\uE76C";
+                return isExpanded ? IconWhenExpanded : IconWhenNotExpanded;
             }
 
             public object ConvertBack(object value, Type targetType, object parameter, string language)

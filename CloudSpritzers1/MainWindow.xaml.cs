@@ -26,6 +26,8 @@ namespace CloudSpritzers1
         public MainWindow()
         {
             InitializeComponent();
+            CloudSpritzers1.src.logic.WindowHelper.MaximizeWindow(this);
+        
         }
     }
 }

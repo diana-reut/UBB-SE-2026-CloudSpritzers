@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CloudSpritzers1.src.model.employee
 {
-    public enum GroupEnum
+    public enum EmployeeDepartment
     {
         HR,
         ADMIN,

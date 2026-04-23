@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace CloudSpritzers1.src.repository
 {
-    public interface IRepository<K, V> where V : class
+    public interface IRepository<TKey, TValue> where TValue : class
     {
-        V GetById(K id);
-        K Add(V elem);
-        void DeleteById(K id);
-        void UpdateById(K id, V elem);
-        IEnumerable<V> GetAll();
+        TValue GetById(TKey id);
+        TKey CreateNewEntity(TValue elem);
+        void DeleteById(TKey id);
+        void UpdateById(TKey id, TValue elem);
+        IEnumerable<TValue> GetAll();
     }
 }

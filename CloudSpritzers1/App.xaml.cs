@@ -4,14 +4,22 @@ using CloudSpritzers1.src.dto;
 using CloudSpritzers1.src.dto.mappingProfiles;
 using CloudSpritzers1.src.model;
 using CloudSpritzers1.src.model.chat;
+using CloudSpritzers1.src.model.employee;
 using CloudSpritzers1.src.repository;
+using CloudSpritzers1.src.repository.implementations;
+using CloudSpritzers1.src.repository.interfaces;
 using CloudSpritzers1.src.service;
 using CloudSpritzers1.src.service.bot;
 using CloudSpritzers1.src.service.bot.strategy;
+using CloudSpritzers1.src.service.implementation;
+using CloudSpritzers1.src.service.interfaces;
 using CloudSpritzers1.src.viewmodel;
+using CloudSpritzers1.src.viewModel;
 using CloudSpritzers1.src.viewModel.chat;
+using CloudSpritzers1.src.viewModel.faq;
+using CloudSpritzers1.src.viewModel.general;
 using CloudSpritzers1.src.viewModel.review;
-using CloudSpritzers1.src.model.employee;
+using CloudSpritzers1.src.repository.database;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -33,6 +41,9 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using CloudSpritzers1.src.viewModel.general;
 using CloudSpritzers1.src.viewModel;
+using CloudSpritzers1.src.repository.interfaces;
+using CloudSpritzers1.src.service.interfaces;
+using CloudSpritzers1.src.model.review;
 
 namespace CloudSpritzers1
 {
@@ -50,18 +61,32 @@ namespace CloudSpritzers1
             InitializeComponent();
         }
 
-        public void SetUser(int userId)
+        /// <summary>
+        /// Attempts to find and set the active user or employee.
+        /// Returns true if the ID was found; otherwise, false.
+        /// </summary>
+        // Updated SetUser in App.xaml.cs
+        public bool SetUser(int userId)
         {
-            if (User != null || Employee != null)
-                return;
-            if (isEmployee)
+            User = null;
+            Employee = null;
+
+            try
             {
-                Employee = Services.GetService<EmployeeService>().GetById(userId);
-                return;
+                if (isEmployee)
+                {
+                    Employee = Services.GetService<IEmployeeService>().GetEmployeeById(userId);
+                    return Employee != null;
+                }
+                else
+                {
+                    User = Services.GetService<IUserService>().GetById(userId);
+                    return User != null;
+                }
             }
-            else
+            catch (KeyNotFoundException)
             {
-                User = Services.GetService<UserService>().GetById(userId);
+                return false; // Safely return false so the UI shows the error
             }
         }
 
@@ -84,37 +109,48 @@ namespace CloudSpritzers1
             services.AddTransient<IBotStrategy, DecisionTreeStrategy>(); // I am not sure this is the way to do it :(
             services.AddTransient<BotEngine>();
 
-            services.AddSingleton<MessageDBRepository>();
+            services.AddSingleton<MessageDatabaseRepository>();
             services.AddSingleton<MessageService>();
 
-            services.AddSingleton<ChatDBRepository>();
+            services.AddSingleton<ChatDatabaseRepository>();
             services.AddSingleton<ChatService>();
 
             services.AddSingleton<ReviewRepository>();
+            services.AddSingleton<IRepository<int, Review>>(provider => provider.GetRequiredService<ReviewRepository>());
             services.AddSingleton<ReviewService>();
 
-            services.AddSingleton<EmployeeRepository>();
-            services.AddSingleton<EmployeeService>();
+            services.AddSingleton<IEmployeeRepository, EmployeeRepository>();
+            services.AddSingleton<IEmployeeService, EmployeeService>();
 
             services.AddSingleton<UserRepository>();
-            services.AddSingleton<UserService>();
+            services.AddSingleton<IUserRepository>(provider => provider.GetRequiredService<UserRepository>());
+            services.AddSingleton<IRepository<int, User>>(provider => provider.GetRequiredService<UserRepository>());
+
+
+            services.AddSingleton<IUserService, UserService>();
 
             services.AddTransient<LandingViewModel>();
             services.AddTransient<AllReviewsViewModel>();
             services.AddTransient<AddReviewViewModel>();
             services.AddTransient<ChatViewModel>();
-            
-            services.AddTransient<UpperBarViewModel>();
-            
-            services.AddSingleton<TicketRepository>();
-            services.AddSingleton<TicketCategoryRepository>();
-            services.AddSingleton<TicketSubcategoryRepository>();
 
-            services.AddSingleton<TicketService>();
-            services.AddSingleton<TicketCategoryService>();
-            services.AddSingleton<TicketSubcategoryService>();
+            // Register the ViewModel
+            services.AddTransient<UpperBarViewModel>();
+
+            services.AddSingleton<ITicketRepository,TicketRepository>();
+            services.AddSingleton<ITicketCategoryRepository, TicketCategoryRepository>();
+            services.AddSingleton<ITicketSubcategoryRepository, TicketSubcategoryRepository>();
+
+            services.AddSingleton<ITicketService, TicketService>();
+            services.AddSingleton<ITicketCategoryService,TicketCategoryService>();
+            services.AddSingleton<ITicketSubcategoryService, TicketSubcategoryService>();
 
             services.AddTransient<TicketsViewModel>();
+
+            services.AddSingleton<IFAQRepository, FAQRepository>();
+            services.AddSingleton<IFAQService, FAQService>();
+
+            services.AddTransient<FAQViewModel>();
 
             return services.BuildServiceProvider();
         }
